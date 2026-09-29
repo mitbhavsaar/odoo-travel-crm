@@ -38,7 +38,7 @@ follow-up dashboards, and a rep leaderboard) for a travel-agency vertical:
   fallback; Odoo Enterprise's native WhatsApp app is the config path to
   full two-way synced messaging.
 """,
-    'author': '361 Techno Consulting',
+    'author': 'Mit Bhavsar',
     'depends': ['crm', 'account', 'sale_crm', 'mail', 'sms', 'calendar', 'base_automation', 'voip'],
     'data': [
         'security/ir.access.csv',
