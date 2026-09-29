@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_travel_crm" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.travel.crm</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="50"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="Travel Desk" string="Travel Desk" name="travel_crm">
+                    <block title="AI Lead Summary API Keys" name="travel_crm_ai_setting">
+                        <setting string="Google Gemini AI Key" help="Used to generate real AI Lead Summaries and next-step recommendations.">
+                            <field name="travel_gemini_api_key" placeholder="e.g. AIzaSy..."/>
+                        </setting>
+                        <setting string="NVIDIA AI Key" help="Secondary LLM provider key for AI Lead Summaries.">
+                            <field name="travel_nvidia_api_key" placeholder="e.g. nvapi-..."/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_travel_crm_config_settings" model="ir.actions.act_window">
+        <field name="name">Settings</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+        <field name="context">{'module': 'travel_crm', 'bin_size': False}</field>
+    </record>
+
+</odoo>

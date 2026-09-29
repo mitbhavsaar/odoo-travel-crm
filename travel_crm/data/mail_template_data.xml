@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="mail_template_inquiry_ack" model="mail.template">
+        <field name="name">Travel CRM: New Inquiry Acknowledgement</field>
+        <field name="model_id" ref="crm.model_crm_lead"/>
+        <field name="subject">We received your travel enquiry - {{ object.name }}</field>
+        <field name="email_from">{{ (object.user_id.email_formatted or user.email_formatted) }}</field>
+        <field name="email_to">{{ object.email_from }}</field>
+        <field name="body_html" type="html">
+            <div style="margin: 0px; padding: 0px;">
+                <p>Hi <t t-out="object.contact_name or object.partner_name or 'there'"/>,</p>
+                <p>Thanks for reaching out! We've received your travel enquiry and one of our
+                   travel consultants will call you shortly to understand your requirements.</p>
+                <p>Warm regards,<br/>Travel Desk</p>
+            </div>
+        </field>
+    </record>
+
+    <record id="mail_template_booking_confirmed" model="mail.template">
+        <field name="name">Travel CRM: Booking Confirmed</field>
+        <field name="model_id" ref="crm.model_crm_lead"/>
+        <field name="subject">Booking Confirmed - {{ object.name }}</field>
+        <field name="email_from">{{ (object.user_id.email_formatted or user.email_formatted) }}</field>
+        <field name="email_to">{{ object.email_from }}</field>
+        <field name="body_html" type="html">
+            <div style="margin: 0px; padding: 0px;">
+                <p>Hi <t t-out="object.contact_name or object.partner_name or 'there'"/>,</p>
+                <p>Your booking is confirmed! Please share your travel documents (ID/passport,
+                   visa if applicable) so we can complete the KYC process ahead of your trip.</p>
+                <p>Warm regards,<br/>Travel Desk</p>
+            </div>
+        </field>
+    </record>
+</odoo>

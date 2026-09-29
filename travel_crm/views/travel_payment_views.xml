@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_travel_payment_installment_list" model="ir.ui.view">
+        <field name="name">travel.payment.installment.list</field>
+        <field name="model">travel.payment.installment</field>
+        <field name="arch" type="xml">
+            <list editable="bottom" decoration-danger="state == 'overdue'" decoration-success="state == 'paid'">
+                <field name="lead_id"/>
+                <field name="name"/>
+                <field name="due_date"/>
+                <field name="amount"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="state"/>
+                <field name="payment_date"/>
+                <button name="action_mark_paid" type="object" string="Mark Paid" icon="fa-check" invisible="state == 'paid'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_travel_payment_installment_search" model="ir.ui.view">
+        <field name="name">travel.payment.installment.search</field>
+        <field name="model">travel.payment.installment</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="lead_id"/>
+                <filter string="Pending" name="pending" domain="[('state','=','pending')]"/>
+                <filter string="Overdue" name="overdue" domain="[('state','=','overdue')]"/>
+                <filter string="Paid" name="paid" domain="[('state','=','paid')]"/>
+                <group>
+                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Due Date" name="group_due_date" context="{'group_by': 'due_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_travel_payment_installment" model="ir.actions.act_window">
+        <field name="name">Payment Installments</field>
+        <field name="res_model">travel.payment.installment</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_travel_payment_installment_search"/>
+        <field name="context">{'search_default_pending': 1}</field>
+    </record>
+</odoo>

@@ -1,0 +1,642 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="travel_crm.TravelCrmDashboard">
+        <div class="o_travel_crm_dashboard">
+            
+            <!-- PAGE HEADER -->
+            <div class="dashboard-header">
+                <div class="header-left">
+                    <button class="sidebar-toggle-btn" t-on-click="() => this.toggleSidebar()" title="Toggle Sidebar">
+                        <i class="oi" data-icon="menu"></i>
+                    </button>
+                    <div class="header-title">
+                        <i class="oi oi-filled text-purple me-2" data-icon="grid_view"></i>
+                        <span t-if="this.state.activeTab === 'dashboard'">Dashboard Overview</span>
+                        <span t-if="this.state.activeTab === 'leads'">Leads Management</span>
+                        <span t-if="this.state.activeTab === 'contacts'">Contacts &amp; Clients</span>
+                        <span t-if="this.state.activeTab === 'campaigns'">Campaigns Analysis</span>
+                        <span t-if="this.state.activeTab === 'calls'">Call Logs &amp; AI Coaching</span>
+                        <span t-if="this.state.activeTab === 'activities'">Scheduled Activities</span>
+                        <span t-if="this.state.activeTab === 'reports'">Reports &amp; Analytics</span>
+                        <span t-if="this.state.activeTab === 'messages'">Messages &amp; Logs</span>
+                        <span t-if="this.state.activeTab === 'settings'">Travel CRM Settings</span>
+                    </div>
+                </div>
+
+                <div class="header-right">
+                    <!-- Date Range Dropdown -->
+                    <select class="date-filter-select" t-att-value="this.state.dateRange" t-on-change="(ev) => this.onDateRangeChange(ev)">
+                        <option value="today">Today</option>
+                        <option value="this_week">This Week</option>
+                        <option value="this_month">This Month</option>
+                        <option value="last_month">Last Month</option>
+                        <option value="this_quarter">This Quarter</option>
+                        <option value="this_year">This Year</option>
+                    </select>
+
+                    <button class="header-icon-btn" t-on-click="() => this.loadData()" title="Refresh Data">
+                        <i class="oi oi-spin" data-icon="refresh" t-if="this.state.isLoading"></i>
+                        <i class="oi" data-icon="refresh" t-if="!this.state.isLoading"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- DASHBOARD BODY WITH COLLAPSIBLE SIDEBAR -->
+            <div class="dashboard-body-wrapper">
+                
+                <!-- COLLAPSIBLE SIDEBAR -->
+                <div class="collapsible-sidebar" t-att-class="{ 'collapsed': this.state.sidebarCollapsed }">
+                    <ul class="sidebar-nav-list">
+                        <li class="nav-item" t-att-class="{ 'active': this.state.activeTab === 'dashboard' }" t-on-click="() => this.onNavClick('dashboard')">
+                            <i class="oi oi-filled nav-icon" data-icon="grid_view"></i>
+                            <span class="nav-text">Dashboard</span>
+                        </li>
+                        <li class="nav-item" t-att-class="{ 'active': this.state.activeTab === 'leads' }" t-on-click="() => this.onNavClick('leads')">
+                            <i class="oi nav-icon" data-icon="filter_alt"></i>
+                            <span class="nav-text">Leads</span>
+                        </li>
+                        <li class="nav-item" t-att-class="{ 'active': this.state.activeTab === 'contacts' }" t-on-click="() => this.onNavClick('contacts')">
+                            <i class="oi nav-icon" data-icon="person"></i>
+                            <span class="nav-text">Contacts</span>
+                        </li>
+                        <li class="nav-item" t-att-class="{ 'active': this.state.activeTab === 'campaigns' }" t-on-click="() => this.onNavClick('campaigns')">
+                            <i class="oi nav-icon" data-icon="campaign"></i>
+                            <span class="nav-text">Campaigns</span>
+                        </li>
+                        <li class="nav-item" t-att-class="{ 'active': this.state.activeTab === 'calls' }" t-on-click="() => this.onNavClick('calls')">
+                            <i class="oi nav-icon" data-icon="phone"></i>
+                            <span class="nav-text">Calls</span>
+                        </li>
+                        <li class="nav-item" t-att-class="{ 'active': this.state.activeTab === 'activities' }" t-on-click="() => this.onNavClick('activities')">
+                            <i class="oi nav-icon" data-icon="today"></i>
+                            <span class="nav-text">Activities</span>
+                        </li>
+                        <li class="nav-item" t-att-class="{ 'active': this.state.activeTab === 'reports' }" t-on-click="() => this.onNavClick('reports')">
+                            <i class="oi nav-icon" data-icon="show_chart"></i>
+                            <span class="nav-text">Reports</span>
+                        </li>
+                        <li class="nav-item" t-att-class="{ 'active': this.state.activeTab === 'messages' }" t-on-click="() => this.onNavClick('messages')">
+                            <i class="oi nav-icon" data-icon="mail"></i>
+                            <span class="nav-text">Messages</span>
+                        </li>
+                        <li class="nav-item" t-att-class="{ 'active': this.state.activeTab === 'settings' }" t-on-click="() => this.onNavClick('settings')">
+                            <i class="oi nav-icon" data-icon="settings"></i>
+                            <span class="nav-text">Settings</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- MAIN DASHBOARD CONTENT AREA -->
+                <div class="main-dashboard-content">
+
+                    <!-- SKELETON / LOADING STATE -->
+                    <t t-if="this.state.isLoading">
+                        <div class="dash-card dash-skeleton" style="height: 250px;"></div>
+                        <div class="dash-card dash-skeleton" style="height: 300px;"></div>
+                    </t>
+
+                    <t t-if="!this.state.isLoading">
+                        
+                        <!-- TAB 1: MAIN DASHBOARD OVERVIEW -->
+                        <t t-if="this.state.activeTab === 'dashboard'">
+                            <!-- ROW 1: PINNED CAMPAIGNS (70%) + LEAD SOURCE SUMMARY (30%) -->
+                            <div class="row">
+                                <div class="col-lg-8 col-md-12">
+                                    <div class="dash-card pinned-campaigns-card">
+                                        <div class="card-header-title">
+                                            <span>Pinned Campaigns</span>
+                                            <div class="header-actions">
+                                                <button class="btn btn-purple-primary text-white text-decoration-none me-2" t-on-click="() => this.openCampaignReport()">
+                                                    Campaign Report
+                                                </button>
+                                                <button class="btn-purple-circle" t-on-click="() => this.createCampaign()" title="Create Campaign">
+                                                    <i class="oi" data-icon="add"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="campaign-list" t-if="this.state.data.pinned_campaigns &amp;&amp; this.state.data.pinned_campaigns.length">
+                                            <t t-foreach="this.state.data.pinned_campaigns" t-as="campaign" t-key="campaign.id">
+                                                <div class="campaign-row">
+                                                    <div class="campaign-left">
+                                                        <div class="campaign-avatar" t-attf-style="background-color: {{ campaign.color }}">
+                                                            <i class="oi" data-icon="campaign"></i>
+                                                        </div>
+                                                        <div class="campaign-name" t-esc="campaign.name"></div>
+                                                    </div>
+
+                                                    <div class="d-flex align-items-center gap-3">
+                                                        <div class="campaign-stats">
+                                                            <div class="converted-num" t-esc="campaign.converted"></div>
+                                                            <div class="converted-label">Leads Converted</div>
+                                                        </div>
+                                                        <button class="btn-unpin" t-on-click="() => this.unpinCampaign(campaign.id)" title="Unpin Campaign">
+                                                            <i class="oi" data-icon="close"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                        </div>
+
+                                        <div t-if="!this.state.data.pinned_campaigns || !this.state.data.pinned_campaigns.length" class="text-muted py-4 text-center">
+                                            No pinned campaigns available.
+                                        </div>
+
+                                        <a class="view-all-link" t-on-click="() => this.onNavClick('campaigns')">
+                                            View All Campaigns <i class="oi ms-1" data-icon="arrow_forward"></i>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4 col-md-12">
+                                    <div class="dash-card source-summary-card">
+                                        <div class="card-header-title">
+                                            Lead Source Summary
+                                        </div>
+
+                                        <div class="chart-container-relative">
+                                            <canvas t-ref="this.donutChartCanvas" style="max-height: 180px; width: 100%;"></canvas>
+                                            <div class="center-total-text">
+                                                <div class="total-label">Total</div>
+                                                <div class="total-num" t-esc="this.state.data.lead_source_summary.total"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="source-legend-list">
+                                            <t t-foreach="this.state.data.lead_source_summary.items" t-as="src" t-key="src.name">
+                                                <div class="source-item">
+                                                    <div class="source-dot-name">
+                                                        <span class="color-dot" t-attf-style="background-color: {{ src.color }}"></span>
+                                                        <span class="source-name" t-esc="src.name"></span>
+                                                    </div>
+                                                    <div class="source-count-pct">
+                                                        <span t-esc="src.count"></span> (<span t-esc="src.percentage"></span>%)
+                                                    </div>
+                                                </div>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- QUICK ACTION CARDS -->
+                            <div class="quick-actions-row">
+                                <div class="quick-action-card" t-on-click="() => this.onUploadLeadsClick()">
+                                    <div class="action-left">
+                                        <div class="icon-circle yellow-bg">
+                                            <i class="oi" data-icon="cloud_upload"></i>
+                                        </div>
+                                        <div class="action-title">Upload Leads</div>
+                                    </div>
+                                    <i class="oi arrow-icon" data-icon="arrow_forward"></i>
+                                </div>
+
+                                <div class="quick-action-card" t-on-click="() => this.createCampaign()">
+                                    <div class="action-left">
+                                        <div class="icon-circle purple-bg">
+                                            <i class="oi" data-icon="campaign"></i>
+                                        </div>
+                                        <div class="action-title">Create Campaign</div>
+                                    </div>
+                                    <i class="oi arrow-icon" data-icon="arrow_forward"></i>
+                                </div>
+                            </div>
+
+                            <!-- ROW 2: LEADS & CALLS ANALYSIS + QUICK MANAGEMENT -->
+                            <div class="row">
+                                <div class="col-lg-8 col-md-12">
+                                    <div class="dash-card">
+                                        <div class="card-header-title">
+                                            Leads Analysis
+                                        </div>
+
+                                        <div class="leads-kpi-grid">
+                                            <div class="kpi-box kpi-open" t-on-click="() => this.onNavClick('leads')">
+                                                <div class="kpi-number" t-esc="this.state.data.kpis.open"></div>
+                                                <div class="kpi-label">Open</div>
+                                            </div>
+                                            <div class="kpi-box kpi-progress" t-on-click="() => this.onNavClick('leads')">
+                                                <div class="kpi-number" t-esc="this.state.data.kpis.in_progress"></div>
+                                                <div class="kpi-label">In-Progress</div>
+                                            </div>
+                                            <div class="kpi-box kpi-converted" t-on-click="() => this.onNavClick('leads')">
+                                                <div class="kpi-number" t-esc="this.state.data.kpis.converted"></div>
+                                                <div class="kpi-label">Converted</div>
+                                            </div>
+                                            <div class="kpi-box kpi-lost" t-on-click="() => this.onNavClick('leads')">
+                                                <div class="kpi-number" t-esc="this.state.data.kpis.lost"></div>
+                                                <div class="kpi-label">Lost</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-4">
+                                            <div class="card-header-title" style="font-size: 16px;">
+                                                Calls Analysis
+                                            </div>
+
+                                            <div class="calls-analysis-box">
+                                                <div class="call-metric-row">
+                                                    <span class="metric-label">Attempted</span>
+                                                    <span class="metric-val" t-esc="this.state.data.calls.attempted"></span>
+                                                </div>
+                                                <div class="call-metric-row">
+                                                    <span class="metric-label">Connected</span>
+                                                    <span class="metric-val" t-esc="this.state.data.calls.connected"></span>
+                                                </div>
+                                                <div class="call-metric-row">
+                                                    <span class="metric-label">Attempted vs Connected</span>
+                                                    <span class="metric-val" t-esc="this.state.data.calls.rate + '%'"></span>
+                                                </div>
+                                                
+                                                <div class="progress-bar-wrap">
+                                                    <div class="progress-fill" t-attf-style="width: {{ this.state.data.calls.rate }}%;"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4 col-md-12">
+                                    <div class="dash-card">
+                                        <div class="card-header-title">
+                                            Quick Reports &amp; Management
+                                        </div>
+
+                                        <div class="stacked-report-cards">
+                                            <div class="report-card" t-on-click="() => this.onNavClick('calls')">
+                                                <div class="report-left">
+                                                    <div class="report-icon-circle green-icon">
+                                                        <i class="oi" data-icon="call"></i>
+                                                    </div>
+                                                    <div class="report-title">User Call Report</div>
+                                                </div>
+                                                <i class="oi report-arrow" data-icon="chevron_right"></i>
+                                            </div>
+
+                                            <div class="report-card" t-on-click="() => this.onNavClick('reports')">
+                                                <div class="report-left">
+                                                    <div class="report-icon-circle red-icon">
+                                                        <i class="oi" data-icon="account_circle"></i>
+                                                    </div>
+                                                    <div class="report-title">User Login Report</div>
+                                                </div>
+                                                <i class="oi report-arrow" data-icon="chevron_right"></i>
+                                            </div>
+
+                                            <div class="report-card" t-on-click="() => this.openManageUsers()">
+                                                <div class="report-left">
+                                                    <div class="report-icon-circle lime-icon">
+                                                        <i class="oi" data-icon="settings"></i>
+                                                    </div>
+                                                    <div class="report-title">Manage Users</div>
+                                                </div>
+                                                <i class="oi report-arrow" data-icon="chevron_right"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ROW 3: ADDITIONAL ANALYTICS CHARTS -->
+                            <div class="additional-charts-grid">
+                                <div class="dash-card">
+                                    <div class="card-header-title">Lead Conversion Trend</div>
+                                    <canvas t-ref="this.trendChartCanvas" style="max-height: 220px; width: 100%;"></canvas>
+                                </div>
+                                <div class="dash-card">
+                                    <div class="card-header-title">Leads by Stage</div>
+                                    <canvas t-ref="this.stageChartCanvas" style="max-height: 220px; width: 100%;"></canvas>
+                                </div>
+                                <div class="dash-card">
+                                    <div class="card-header-title">Revenue Summary by Destination</div>
+                                    <canvas t-ref="this.revenueChartCanvas" style="max-height: 220px; width: 100%;"></canvas>
+                                </div>
+                                <div class="dash-card">
+                                    <div class="card-header-title">Sales Rep Performance</div>
+                                    <canvas t-ref="this.userPerfChartCanvas" style="max-height: 220px; width: 100%;"></canvas>
+                                </div>
+                            </div>
+                        </t>
+
+                        <!-- TAB 2: LEADS SUB-VIEW -->
+                        <t t-if="this.state.activeTab === 'leads'">
+                            <div class="in-dashboard-tab-panel">
+                                <div class="tab-panel-header">
+                                    <div class="panel-title">
+                                        <i class="oi" data-icon="filter_alt"></i> Leads Overview &amp; Enquiries
+                                    </div>
+                                    <button class="btn btn-purple-primary" t-on-click="() => this.onUploadLeadsClick()">
+                                        <i class="oi me-1" data-icon="add"></i> New Opportunity
+                                    </button>
+                                </div>
+
+                                <table class="dash-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Opportunity</th>
+                                            <th>Contact Name</th>
+                                            <th>Phone</th>
+                                            <th>Email</th>
+                                            <th>Destination</th>
+                                            <th>Stage</th>
+                                            <th>Pkg Revenue</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="this.state.data.recent_leads" t-as="lead" t-key="lead.id">
+                                            <tr>
+                                                <td class="fw-bold" t-esc="lead.name"></td>
+                                                <td t-esc="lead.contact_name"></td>
+                                                <td t-esc="lead.phone"></td>
+                                                <td t-esc="lead.email"></td>
+                                                <td><span class="badge bg-light text-dark" t-esc="lead.destination"></span></td>
+                                                <td><span class="badge-pill badge-interested" t-esc="lead.stage"></span></td>
+                                                <td class="fw-bold text-success">₹<t t-esc="lead.revenue"/></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-primary" t-on-click="() => this.openLeadRecord(lead.id)">
+                                                        Open
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </t>
+
+                        <!-- TAB 3: CONTACTS SUB-VIEW -->
+                        <t t-if="this.state.activeTab === 'contacts'">
+                            <div class="in-dashboard-tab-panel">
+                                <div class="tab-panel-header">
+                                    <div class="panel-title">
+                                        <i class="oi" data-icon="contacts"></i> Contacts &amp; Clients Directory
+                                    </div>
+                                </div>
+
+                                <table class="dash-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Client Name</th>
+                                            <th>Phone Number</th>
+                                            <th>Email Address</th>
+                                            <th>City</th>
+                                            <th>Country</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="this.state.data.recent_contacts" t-as="contact" t-key="contact.id">
+                                            <tr>
+                                                <td class="fw-bold" t-esc="contact.name"></td>
+                                                <td t-esc="contact.phone"></td>
+                                                <td t-esc="contact.email"></td>
+                                                <td t-esc="contact.city"></td>
+                                                <td t-esc="contact.country"></td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </t>
+
+                        <!-- TAB 4: CAMPAIGNS SUB-VIEW -->
+                        <t t-if="this.state.activeTab === 'campaigns'">
+                            <div class="in-dashboard-tab-panel">
+                                <div class="tab-panel-header">
+                                    <div class="panel-title">
+                                        <i class="oi" data-icon="campaign"></i> Active Campaigns &amp; Lead Sources
+                                    </div>
+                                    <button class="btn btn-purple-primary" t-on-click="() => this.createCampaign()">
+                                        <i class="oi me-1" data-icon="add"></i> Create Campaign
+                                    </button>
+                                </div>
+
+                                <table class="dash-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Campaign Name</th>
+                                            <th>Converted Leads</th>
+                                            <th>Status</th>
+                                            <th>Performance</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="this.state.data.pinned_campaigns" t-as="camp" t-key="camp.id">
+                                            <tr>
+                                                <td class="fw-bold">
+                                                    <i class="oi me-2" data-icon="campaign" t-attf-style="color: {{ camp.color }}"></i>
+                                                    <span t-esc="camp.name"></span>
+                                                </td>
+                                                <td class="fw-bold fs-6" t-esc="camp.converted"></td>
+                                                <td><span class="badge-pill badge-converted">Active</span></td>
+                                                <td>
+                                                    <div class="progress" style="height: 6px; width: 120px;">
+                                                        <div class="progress-bar bg-success" style="width: 85%;"></div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </t>
+
+                        <!-- TAB 5: CALLS SUB-VIEW -->
+                        <t t-if="this.state.activeTab === 'calls'">
+                            <div class="in-dashboard-tab-panel">
+                                <div class="tab-panel-header">
+                                    <div class="panel-title">
+                                        <i class="oi" data-icon="call"></i> Call Logs &amp; AI Coaching
+                                    </div>
+                                    <button class="btn btn-purple-primary" t-on-click="() => this.openUserCallReport()">
+                                        Full Call Analysis
+                                    </button>
+                                </div>
+
+                                <table class="dash-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Caller Number</th>
+                                            <th>Call Type</th>
+                                            <th>Duration</th>
+                                            <th>Disposition</th>
+                                            <th>Audio Recording (MP3)</th>
+                                            <th>AI Score</th>
+                                            <th>Agent</th>
+                                            <th>Call Time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="this.state.data.recent_calls" t-as="call" t-key="call.id">
+                                            <tr>
+                                                <td class="fw-bold" t-esc="call.number"></td>
+                                                <td><span class="badge bg-secondary" t-esc="call.type"></span></td>
+                                                <td t-esc="call.duration"></td>
+                                                <td><span class="badge-pill badge-fresh" t-esc="call.disposition"></span></td>
+                                                <td>
+                                                    <t t-if="call.has_recording">
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <audio controls="controls" style="height: 28px; width: 180px;">
+                                                                <source t-att-src="call.recording_url" type="audio/mpeg"/>
+                                                            </audio>
+                                                            <a t-att-href="call.recording_url" download="call_recording.mp3" class="btn btn-sm btn-outline-primary py-0 px-2" title="Download MP3">
+                                                                <i class="oi" data-icon="download"></i> Download
+                                                            </a>
+                                                        </div>
+                                                    </t>
+                                                    <t t-if="!call.has_recording">
+                                                        <span class="text-muted small">No Recording</span>
+                                                    </t>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-primary" t-esc="call.score + '/100'"></span>
+                                                </td>
+                                                <td t-esc="call.agent"></td>
+                                                <td t-esc="call.date"></td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </t>
+
+                        <!-- TAB 6: ACTIVITIES SUB-VIEW -->
+                        <t t-if="this.state.activeTab === 'activities'">
+                            <div class="in-dashboard-tab-panel">
+                                <div class="tab-panel-header">
+                                    <div class="panel-title">
+                                        <i class="oi" data-icon="event"></i> Scheduled Activities &amp; Reminders
+                                    </div>
+                                </div>
+
+                                <table class="dash-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Activity Summary</th>
+                                            <th>Type</th>
+                                            <th>Deadline</th>
+                                            <th>Assigned To</th>
+                                            <th>Opportunity</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="this.state.data.recent_activities" t-as="act" t-key="act.id">
+                                            <tr>
+                                                <td class="fw-bold" t-esc="act.summary"></td>
+                                                <td><span class="badge bg-info text-dark" t-esc="act.type"></span></td>
+                                                <td class="text-danger fw-bold" t-esc="act.deadline"></td>
+                                                <td t-esc="act.user"></td>
+                                                <td t-esc="act.res_name"></td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </t>
+
+                        <!-- TAB 7: REPORTS SUB-VIEW -->
+                        <t t-if="this.state.activeTab === 'reports'">
+                            <div class="in-dashboard-tab-panel">
+                                <div class="tab-panel-header">
+                                    <div class="panel-title">
+                                        <i class="oi" data-icon="analytics"></i> Reports &amp; Conversion Analytics
+                                    </div>
+                                </div>
+
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <div class="dash-card">
+                                            <h5>Lead Funnel Summary</h5>
+                                            <p class="text-muted">Conversion funnel analysis across sales stages.</p>
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item d-flex justify-content-between"><span>New Inquiries</span> <strong>45</strong></li>
+                                                <li class="list-group-item d-flex justify-content-between"><span>Itinerary Shared</span> <strong>32</strong></li>
+                                                <li class="list-group-item d-flex justify-content-between"><span>Negotiation</span> <strong>20</strong></li>
+                                                <li class="list-group-item d-flex justify-content-between"><span>Booking Confirmed</span> <strong>15</strong></li>
+                                                <li class="list-group-item d-flex justify-content-between"><span>Trip Confirmed (Won)</span> <strong class="text-success">20</strong></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="dash-card">
+                                            <h5>Team Activity Performance</h5>
+                                            <p class="text-muted">Total activities completed per representative.</p>
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item d-flex justify-content-between"><span>Calls Logged</span> <strong>140</strong></li>
+                                                <li class="list-group-item d-flex justify-content-between"><span>Emails Sent</span> <strong>85</strong></li>
+                                                <li class="list-group-item d-flex justify-content-between"><span>Meetings Scheduled</span> <strong>28</strong></li>
+                                                <li class="list-group-item d-flex justify-content-between"><span>Avg Response Time</span> <strong>1.5 Hours</strong></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+
+                        <!-- TAB 8: MESSAGES SUB-VIEW -->
+                        <t t-if="this.state.activeTab === 'messages'">
+                            <div class="in-dashboard-tab-panel">
+                                <div class="tab-panel-header">
+                                    <div class="panel-title">
+                                        <i class="oi" data-icon="chat"></i> Communication &amp; Messages Log
+                                    </div>
+                                </div>
+
+                                <div class="alert alert-info">
+                                    <i class="oi me-2" data-icon="chat"></i> WhatsApp &amp; Inbound Messages logged in chatter will appear here in real-time.
+                                </div>
+                            </div>
+                        </t>
+
+                        <!-- TAB 9: SETTINGS SUB-VIEW -->
+                        <t t-if="this.state.activeTab === 'settings'">
+                            <div class="in-dashboard-tab-panel">
+                                <div class="tab-panel-header">
+                                    <div class="panel-title">
+                                        <i class="oi" data-icon="settings"></i> Travel CRM Settings &amp; API Webhooks
+                                    </div>
+                                </div>
+
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <div class="dash-card">
+                                            <h5>API Key Configuration</h5>
+                                            <p class="text-muted">Used for securing inbound webhooks.</p>
+                                            <div class="mb-3">
+                                                <label class="form-label font-weight-bold">System API Key:</label>
+                                                <input type="text" class="form-control" readonly="readonly" t-att-value="this.state.data.settings_info.api_key"/>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label font-weight-bold">Lead Webhook Endpoint:</label>
+                                                <input type="text" class="form-control" readonly="readonly" t-att-value="this.state.data.settings_info.lead_webhook"/>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label font-weight-bold">Call Sync Webhook Endpoint:</label>
+                                                <input type="text" class="form-control" readonly="readonly" t-att-value="this.state.data.settings_info.call_webhook"/>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="dash-card">
+                                            <h5>Team Details</h5>
+                                            <p class="text-muted">Default sales team for Travel CRM leads.</p>
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item d-flex justify-content-between"><span>Sales Team:</span> <strong t-esc="this.state.data.settings_info.team_name"></strong></li>
+                                                <li class="list-group-item d-flex justify-content-between"><span>Environment:</span> <strong t-esc="this.state.data.settings_info.odoo_version"></strong></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+
+                    </t>
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates>

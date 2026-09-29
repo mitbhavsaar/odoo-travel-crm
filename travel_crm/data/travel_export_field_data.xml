@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- Call Log fields -->
+    <record id="export_field_call_datetime" model="travel.export.field">
+        <field name="name">call_datetime</field>
+        <field name="label">Call Start Time</field>
+        <field name="source">call_log</field>
+        <field name="field_type">datetime</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="export_field_call_type" model="travel.export.field">
+        <field name="name">call_type</field>
+        <field name="label">Call Type</field>
+        <field name="source">call_log</field>
+        <field name="field_type">selection</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="export_field_duration" model="travel.export.field">
+        <field name="name">duration_seconds</field>
+        <field name="label">Duration (sec)</field>
+        <field name="source">call_log</field>
+        <field name="field_type">integer</field>
+        <field name="sequence">30</field>
+    </record>
+    <record id="export_field_caller" model="travel.export.field">
+        <field name="name">caller_number</field>
+        <field name="label">Caller</field>
+        <field name="source">call_log</field>
+        <field name="field_type">char</field>
+        <field name="sequence">40</field>
+    </record>
+    <record id="export_field_agent" model="travel.export.field">
+        <field name="name">agent_id</field>
+        <field name="label">Agent</field>
+        <field name="source">call_log</field>
+        <field name="field_type">many2one</field>
+        <field name="sequence">50</field>
+    </record>
+    <record id="export_field_sim_line" model="travel.export.field">
+        <field name="name">sim_line</field>
+        <field name="label">SIM / Line</field>
+        <field name="source">call_log</field>
+        <field name="field_type">selection</field>
+        <field name="sequence">60</field>
+    </record>
+    <record id="export_field_first_attempt" model="travel.export.field">
+        <field name="name">is_first_attempt</field>
+        <field name="label">First Attempted Contact</field>
+        <field name="source">call_log</field>
+        <field name="field_type">boolean</field>
+        <field name="sequence">70</field>
+    </record>
+    <record id="export_field_first_success" model="travel.export.field">
+        <field name="name">is_first_success</field>
+        <field name="label">First Successful Contact</field>
+        <field name="source">call_log</field>
+        <field name="field_type">boolean</field>
+        <field name="sequence">80</field>
+    </record>
+    <record id="export_field_campaign" model="travel.export.field">
+        <field name="name">campaign_name</field>
+        <field name="label">Campaign Name</field>
+        <field name="source">call_log</field>
+        <field name="field_type">char</field>
+        <field name="sequence">90</field>
+    </record>
+    <record id="export_field_disposition" model="travel.export.field">
+        <field name="name">call_disposition</field>
+        <field name="label">Disposition</field>
+        <field name="source">call_log</field>
+        <field name="field_type">selection</field>
+        <field name="sequence">100</field>
+    </record>
+    <record id="export_field_note" model="travel.export.field">
+        <field name="name">note</field>
+        <field name="label">Note / Feedback</field>
+        <field name="source">call_log</field>
+        <field name="field_type">char</field>
+        <field name="sequence">110</field>
+    </record>
+    <record id="export_field_ai_score" model="travel.export.field">
+        <field name="name">ai_overall_score</field>
+        <field name="label">AI Score</field>
+        <field name="source">call_log</field>
+        <field name="field_type">integer</field>
+        <field name="sequence">120</field>
+    </record>
+    <record id="export_field_ai_sentiment" model="travel.export.field">
+        <field name="name">ai_sentiment</field>
+        <field name="label">AI Sentiment</field>
+        <field name="source">call_log</field>
+        <field name="field_type">selection</field>
+        <field name="sequence">130</field>
+    </record>
+
+    <!-- Lead fields -->
+    <record id="export_field_lead_name" model="travel.export.field">
+        <field name="name">name</field>
+        <field name="label">Opportunity</field>
+        <field name="source">lead</field>
+        <field name="field_type">char</field>
+        <field name="sequence">200</field>
+    </record>
+    <record id="export_field_lead_contact" model="travel.export.field">
+        <field name="name">contact_name</field>
+        <field name="label">Contact Name</field>
+        <field name="source">lead</field>
+        <field name="field_type">char</field>
+        <field name="sequence">210</field>
+    </record>
+    <record id="export_field_lead_stage" model="travel.export.field">
+        <field name="name">stage_id</field>
+        <field name="label">Stage</field>
+        <field name="source">lead</field>
+        <field name="field_type">many2one</field>
+        <field name="sequence">220</field>
+    </record>
+    <record id="export_field_lead_destination" model="travel.export.field">
+        <field name="name">x_destination_id</field>
+        <field name="label">Destination</field>
+        <field name="source">lead</field>
+        <field name="field_type">many2one</field>
+        <field name="sequence">230</field>
+    </record>
+    <record id="export_field_lead_revenue" model="travel.export.field">
+        <field name="name">expected_revenue</field>
+        <field name="label">Package Amount</field>
+        <field name="source">lead</field>
+        <field name="field_type">float</field>
+        <field name="sequence">240</field>
+    </record>
+
+</odoo>

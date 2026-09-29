@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <record id="destination_bali" model="travel.destination">
+        <field name="name">Bali, Indonesia</field>
+    </record>
+    <record id="destination_dubai" model="travel.destination">
+        <field name="name">Dubai, UAE</field>
+    </record>
+    <record id="destination_kerala" model="travel.destination">
+        <field name="name">Kerala, India</field>
+        <field name="is_domestic">True</field>
+    </record>
+    <record id="destination_switzerland" model="travel.destination">
+        <field name="name">Switzerland</field>
+    </record>
+
+    <record id="demo_lead_manish" model="crm.lead">
+        <field name="name">Manish - 361 Travel - Bali Group Package</field>
+        <field name="type">opportunity</field>
+        <field name="team_id" ref="crm_team_travel_desk"/>
+        <field name="stage_id" ref="stage_travel_itinerary_shared"/>
+        <field name="contact_name">Manish</field>
+        <field name="partner_name">361 Travel</field>
+        <field name="phone">+919512722727</field>
+        <field name="email_from">manish@361travel.example</field>
+        <field name="x_destination_id" ref="destination_bali"/>
+        <field name="x_package_type">group</field>
+        <field name="x_pax_adults">4</field>
+        <field name="expected_revenue">180000</field>
+        <field name="x_call_disposition">interested</field>
+        <field name="x_itinerary_sent">True</field>
+        <field name="user_id" ref="base.user_admin"/>
+    </record>
+
+    <record id="demo_lead_priya" model="crm.lead">
+        <field name="name">Priya Sharma - Dubai Honeymoon</field>
+        <field name="type">opportunity</field>
+        <field name="team_id" ref="crm_team_travel_desk"/>
+        <field name="stage_id" ref="stage_travel_negotiation"/>
+        <field name="contact_name">Priya Sharma</field>
+        <field name="phone">+919812345678</field>
+        <field name="email_from">priya.sharma@example.com</field>
+        <field name="x_destination_id" ref="destination_dubai"/>
+        <field name="x_package_type">honeymoon</field>
+        <field name="x_pax_adults">2</field>
+        <field name="expected_revenue">220000</field>
+        <field name="x_call_disposition">interested</field>
+        <field name="user_id" ref="base.user_admin"/>
+    </record>
+
+    <record id="demo_lead_ravi" model="crm.lead">
+        <field name="name">Ravi Kumar - Kerala Family Trip</field>
+        <field name="type">opportunity</field>
+        <field name="team_id" ref="crm_team_travel_desk"/>
+        <field name="stage_id" ref="stage_travel_booking_confirmed"/>
+        <field name="contact_name">Ravi Kumar</field>
+        <field name="phone">+919845098450</field>
+        <field name="email_from">ravi.kumar@example.com</field>
+        <field name="x_destination_id" ref="destination_kerala"/>
+        <field name="x_package_type">fit</field>
+        <field name="x_pax_adults">2</field>
+        <field name="x_pax_children">2</field>
+        <field name="expected_revenue">95000</field>
+        <field name="x_call_disposition">converted</field>
+        <field name="x_kyc_status">submitted</field>
+        <field name="user_id" ref="base.user_admin"/>
+    </record>
+
+    <record id="demo_lead_ravi_installment_1" model="travel.payment.installment">
+        <field name="lead_id" ref="demo_lead_ravi"/>
+        <field name="name">Booking Advance</field>
+        <field name="amount">30000</field>
+        <field name="due_date" eval="(DateTime.now()).strftime('%Y-%m-%d')"/>
+        <field name="state">paid</field>
+    </record>
+    <record id="demo_lead_ravi_installment_2" model="travel.payment.installment">
+        <field name="lead_id" ref="demo_lead_ravi"/>
+        <field name="name">Balance Before Travel</field>
+        <field name="amount">65000</field>
+        <field name="due_date" eval="(DateTime.now() + relativedelta(days=15)).strftime('%Y-%m-%d')"/>
+        <field name="state">pending</field>
+    </record>
+
+    <record id="demo_lead_fresh1" model="crm.lead">
+        <field name="name">Website Enquiry - Switzerland Tour</field>
+        <field name="type">opportunity</field>
+        <field name="team_id" ref="crm_team_travel_desk"/>
+        <field name="stage_id" ref="stage_travel_inquiry"/>
+        <field name="contact_name">Anita Desai</field>
+        <field name="phone">+919900112233</field>
+        <field name="email_from">anita.desai@example.com</field>
+        <field name="x_destination_id" ref="destination_switzerland"/>
+        <field name="x_package_type">customized</field>
+        <field name="x_pax_adults">2</field>
+        <field name="expected_revenue">340000</field>
+        <field name="x_call_disposition">fresh</field>
+        <field name="user_id" ref="base.user_admin"/>
+    </record>
+
+    <record id="demo_call_manish_1" model="travel.call.log">
+        <field name="lead_id" ref="demo_lead_manish"/>
+        <field name="agent_id" ref="base.user_admin"/>
+        <field name="caller_number">+919512722727</field>
+        <field name="call_type">outgoing</field>
+        <field name="call_datetime" eval="(DateTime.now() - relativedelta(days=3)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="duration_seconds">245</field>
+        <field name="sim_line">sim1</field>
+        <field name="call_disposition">interested</field>
+        <field name="is_first_attempt">True</field>
+        <field name="is_first_success">True</field>
+        <field name="campaign_name">Instagram - Bali Group Deals</field>
+        <field name="note">Confirmed 4 pax, wants itinerary with 2 optional excursions.</field>
+        <field name="ai_generated">True</field>
+        <field name="ai_generated_on" eval="(DateTime.now() - relativedelta(days=3)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="ai_rapport_score">82</field>
+        <field name="ai_needs_discovery_score">75</field>
+        <field name="ai_objection_handling_score">60</field>
+        <field name="ai_closing_score">70</field>
+        <field name="ai_conversion_probability">68.5</field>
+        <field name="ai_is_decision_maker">True</field>
+        <field name="ai_sentiment">positive</field>
+        <field name="ai_feedback_good">Agent built rapport quickly and confirmed pax count and budget within the first two minutes.</field>
+        <field name="ai_feedback_improve">Did not proactively offer the travel-insurance add-on before closing the call.</field>
+    </record>
+
+    <record id="demo_call_priya_1" model="travel.call.log">
+        <field name="lead_id" ref="demo_lead_priya"/>
+        <field name="agent_id" ref="base.user_admin"/>
+        <field name="caller_number">+919812345678</field>
+        <field name="call_type">incoming</field>
+        <field name="call_datetime" eval="(DateTime.now() - relativedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="duration_seconds">410</field>
+        <field name="sim_line">sim2</field>
+        <field name="call_disposition">interested</field>
+        <field name="campaign_name">Google Ads - Honeymoon Packages</field>
+        <field name="note">Negotiating on price, comparing with a competitor quote.</field>
+        <field name="ai_generated">True</field>
+        <field name="ai_generated_on" eval="(DateTime.now() - relativedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="ai_rapport_score">88</field>
+        <field name="ai_needs_discovery_score">80</field>
+        <field name="ai_objection_handling_score">55</field>
+        <field name="ai_closing_score">50</field>
+        <field name="ai_conversion_probability">61.0</field>
+        <field name="ai_is_decision_maker">True</field>
+        <field name="ai_sentiment">neutral</field>
+        <field name="ai_feedback_good">Strong rapport and active listening on travel preferences.</field>
+        <field name="ai_feedback_improve">Objection on price was not addressed with a clear value comparison - consider a side-by-side inclusions sheet.</field>
+    </record>
+
+    <record id="demo_call_fresh1_1" model="travel.call.log">
+        <field name="lead_id" ref="demo_lead_fresh1"/>
+        <field name="agent_id" ref="base.user_admin"/>
+        <field name="caller_number">+919900112233</field>
+        <field name="call_type">outgoing</field>
+        <field name="call_datetime" eval="(DateTime.now() - relativedelta(hours=5)).strftime('%Y-%m-%d %H:%M:%S')"/>
+        <field name="duration_seconds">15</field>
+        <field name="sim_line">sim1</field>
+        <field name="call_disposition">rnr</field>
+        <field name="is_first_attempt">True</field>
+        <field name="campaign_name">Website Form</field>
+        <field name="note">Ring, no response. Will retry tomorrow morning.</field>
+    </record>
+
+</odoo>

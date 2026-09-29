@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_travel_call_log_form" model="ir.ui.view">
+        <field name="name">travel.call.log.form</field>
+        <field name="model">travel.call.log</field>
+        <field name="arch" type="xml">
+            <form string="Call Log">
+                <header>
+                    <button name="action_generate_ai_score" type="object"
+                            string="Generate AI Score" class="btn-primary" icon="fa-magic"
+                            invisible="ai_generated"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="caller_number" placeholder="Caller number"/></h1>
+                    </div>
+                    <group>
+                        <group string="Call Details">
+                            <field name="lead_id"/>
+                            <field name="agent_id"/>
+                            <field name="call_type"/>
+                            <field name="call_datetime"/>
+                            <field name="duration_seconds"/>
+                            <field name="sim_line"/>
+                            <field name="call_disposition"/>
+                            <field name="campaign_name"/>
+                        </group>
+                        <group string="Attribution &amp; Recording">
+                            <field name="is_first_attempt"/>
+                            <field name="is_first_success"/>
+                            <field name="recording_filename" invisible="1"/>
+                            <field name="recording_file" filename="recording_filename" widget="binary" string="Upload MP3 File"/>
+                            <field name="recording_player_html" readonly="1" string="Audio Player"/>
+                            <field name="recording_url" widget="url"/>
+                            <field name="team_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Note">
+                        <field name="note" nolabel="1"/>
+                    </group>
+                    <notebook>
+                        <page string="AI Coaching" name="ai_coaching">
+                            <group>
+                                <group string="Skill Scores (0-100)">
+                                    <field name="ai_rapport_score"/>
+                                    <field name="ai_needs_discovery_score"/>
+                                    <field name="ai_objection_handling_score"/>
+                                    <field name="ai_closing_score"/>
+                                    <field name="ai_overall_score"/>
+                                </group>
+                                <group string="Signals">
+                                    <field name="ai_conversion_probability"/>
+                                    <field name="ai_is_decision_maker"/>
+                                    <field name="ai_sentiment"/>
+                                    <field name="ai_generated_on"/>
+                                </group>
+                            </group>
+                            <group string="What Went Well">
+                                <field name="ai_feedback_good" nolabel="1"/>
+                            </group>
+                            <group string="Could Improve">
+                                <field name="ai_feedback_improve" nolabel="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_travel_call_log_list" model="ir.ui.view">
+        <field name="name">travel.call.log.list</field>
+        <field name="model">travel.call.log</field>
+        <field name="arch" type="xml">
+            <list string="Call Logs">
+                <field name="call_datetime"/>
+                <field name="lead_id"/>
+                <field name="agent_id"/>
+                <field name="caller_number"/>
+                <field name="call_type" widget="badge"/>
+                <field name="duration_display"/>
+                <field name="sim_line"/>
+                <field name="call_disposition" widget="badge"/>
+                <field name="recording_player_html" string="Call Recording MP3"/>
+                <field name="ai_overall_score"/>
+                <field name="ai_sentiment" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_travel_call_log_pivot" model="ir.ui.view">
+        <field name="name">travel.call.log.pivot</field>
+        <field name="model">travel.call.log</field>
+        <field name="arch" type="xml">
+            <pivot string="Activity &amp; Performance">
+                <field name="agent_id" type="row"/>
+                <field name="call_type" type="col"/>
+                <field name="duration_seconds" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_travel_call_log_graph" model="ir.ui.view">
+        <field name="name">travel.call.log.graph</field>
+        <field name="model">travel.call.log</field>
+        <field name="arch" type="xml">
+            <graph string="Call Logs Analysis" type="bar">
+                <field name="agent_id" type="row"/>
+                <field name="call_type" type="col"/>
+                <field name="duration_seconds" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_travel_call_log" model="ir.actions.act_window">
+        <field name="name">Calls</field>
+        <field name="res_model">travel.call.log</field>
+        <field name="view_mode">list,form,pivot,graph</field>
+    </record>
+
+    <record id="action_travel_call_log_reporting" model="ir.actions.act_window">
+        <field name="name">Calls &amp; SIM Analysis</field>
+        <field name="res_model">travel.call.log</field>
+        <field name="view_mode">pivot,graph,list,form</field>
+    </record>
+</odoo>

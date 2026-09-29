@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_travel_export_wizard_form" model="ir.ui.view">
+        <field name="name">travel.export.wizard.form</field>
+        <field name="model">travel.export.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Export Activity Report">
+                <field name="state" invisible="1"/>
+
+                <group invisible="state != 'select'">
+                    <p><strong>Step 1 of 3 - Filters &amp; Select Action Fields</strong></p>
+                    <group>
+                        <group>
+                            <field name="team_id"/>
+                            <field name="agent_id"/>
+                        </group>
+                        <group>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                    </group>
+                    <field name="field_ids" widget="many2many_checkboxes"/>
+                </group>
+
+                <group invisible="state != 'customize'">
+                    <p><strong>Step 2 of 3 - Customize Column</strong> (drag to reorder,
+                        edit the header text)</p>
+                    <field name="line_ids">
+                        <list editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field name="export_field_id" readonly="1"/>
+                            <field name="custom_label"/>
+                        </list>
+                    </field>
+                </group>
+
+                <group invisible="state != 'done'">
+                    <p><strong>Step 3 of 3 - Download</strong></p>
+                    <p><field name="record_count" readonly="1"/> rows ready in
+                        <field name="file_name" readonly="1"/>.</p>
+                </group>
+
+                <footer>
+                    <button name="action_next_to_customize" type="object"
+                            string="Next: Customize Columns" class="btn-primary"
+                            invisible="state != 'select'"/>
+                    <button name="action_back_to_select" type="object"
+                            string="Back" invisible="state != 'customize'"/>
+                    <button name="action_generate_export" type="object"
+                            string="Generate Report" class="btn-primary"
+                            invisible="state != 'customize'"/>
+                    <button name="action_back_to_customize" type="object"
+                            string="Back" invisible="state != 'done'"/>
+                    <button name="action_download" type="object"
+                            string="Download XLSX" class="btn-primary"
+                            invisible="state != 'done'"/>
+                    <button string="Close" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_travel_export_wizard" model="ir.actions.act_window">
+        <field name="name">Export Activity Report</field>
+        <field name="res_model">travel.export.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

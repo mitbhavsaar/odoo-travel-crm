@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="crm_team_travel_desk" model="crm.team">
+        <field name="name">Travel Desk</field>
+        <field name="use_opportunities">True</field>
+    </record>
+
+    <record id="crm_team_rajasthan" model="crm.team">
+        <field name="name">Rajasthan Regional Team</field>
+        <field name="use_opportunities">True</field>
+    </record>
+
+    <record id="crm_team_mumbai" model="crm.team">
+        <field name="name">Mumbai / Maharashtra Regional Team</field>
+        <field name="use_opportunities">True</field>
+    </record>
+</odoo>

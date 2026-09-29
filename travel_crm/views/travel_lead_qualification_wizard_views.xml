@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_travel_lead_qualification_wizard_form" model="ir.ui.view">
+        <field name="name">travel.lead.qualification.wizard.form</field>
+        <field name="model">travel.lead.qualification.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Qualify Lead - Call Qualification Wizard">
+                <sheet>
+                    <div class="alert alert-info text-center fw-bold mb-3" role="alert">
+                        📞 Call Lead Qualification: Fill in client requirements below to automatically advance stage to <strong>Qualified</strong>.
+                    </div>
+                    <group>
+                        <group string="🏝️ Trip Details">
+                            <field name="lead_id" invisible="1"/>
+                            <field name="destination_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="package_type"/>
+                            <label for="travel_date_from" string="Travel Dates"/>
+                            <div class="o_row">
+                                <field name="travel_date_from" placeholder="Start Date"/>
+                                <span class="me-1 ms-1">to</span>
+                                <field name="travel_date_to" placeholder="End Date"/>
+                            </div>
+                        </group>
+                        <group string="👥 Passengers &amp; Budget">
+                            <label for="pax_adults" string="Passengers Breakdown"/>
+                            <div class="o_row">
+                                <span>Adults: </span><field name="pax_adults" class="oe_inline me-2" readonly="0"/>
+                                <span>Child: </span><field name="pax_children" class="oe_inline me-2" readonly="0"/>
+                                <span>Infant: </span><field name="pax_infants" class="oe_inline" readonly="0"/>
+                            </div>
+                            <field name="flight_included" widget="boolean_toggle"/>
+                            <field name="total_budget" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                        </group>
+                    </group>
+                    <group string="📋 Call Status &amp; Client Requirements">
+                        <field name="call_disposition" widget="radio" class="oe_inline"/>
+                        <field name="qualification_notes" placeholder="Enter key requirements discussed on call (e.g., preference for beach resort, vegetarian food, specific flight timings)..."/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_apply_qualification" string="Save &amp; Mark Qualified" type="object" class="btn-primary" icon="fa-check-circle"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_travel_lead_qualification_wizard" model="ir.actions.act_window">
+        <field name="name">Qualify Travel Lead</field>
+        <field name="res_model">travel.lead.qualification.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

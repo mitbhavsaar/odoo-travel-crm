@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--  Funnel: leads by call disposition x stage -->
+    <record id="view_travel_funnel_pivot" model="ir.ui.view">
+        <field name="name">travel.crm.funnel.pivot</field>
+        <field name="model">crm.lead</field>
+        <field name="arch" type="xml">
+            <pivot string="Travel Funnel">
+                <field name="x_call_disposition" type="row"/>
+                <field name="stage_id" type="col"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_travel_funnel" model="ir.actions.act_window">
+        <field name="name">Funnel by Call Disposition</field>
+        <field name="res_model">crm.lead</field>
+        <field name="view_mode">pivot,graph</field>
+        <field name="domain" eval="[('team_id', '=', ref('crm_team_travel_desk')), ('type', '=', 'opportunity')]"/>
+    </record>
+    <record id="action_travel_funnel_view_pivot" model="ir.actions.act_window.view">
+        <field name="sequence">1</field>
+        <field name="view_mode">pivot</field>
+        <field name="view_id" ref="view_travel_funnel_pivot"/>
+        <field name="act_window_id" ref="action_travel_funnel"/>
+    </record>
+
+    <!--  Follow-ups board: native Activity view, scoped to Travel Desk -->
+    <record id="action_travel_followups" model="ir.actions.act_window">
+        <field name="name">Follow-Ups</field>
+        <field name="res_model">crm.lead</field>
+        <field name="view_mode">activity,list,kanban</field>
+        <field name="domain" eval="[('team_id', '=', ref('crm_team_travel_desk'))]"/>
+    </record>
+
+    <!--  Leaderboard: activities (calls/meetings) per rep -->
+    <record id="view_travel_leaderboard_pivot" model="ir.ui.view">
+        <field name="name">travel.crm.leaderboard.pivot</field>
+        <field name="model">crm.activity.report</field>
+        <field name="arch" type="xml">
+            <pivot string="Travel Team Leaderboard">
+                <field name="user_id" type="row"/>
+                <field name="mail_activity_type_id" type="col"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_travel_leaderboard" model="ir.actions.act_window">
+        <field name="name">Team Leaderboard</field>
+        <field name="res_model">crm.activity.report</field>
+        <field name="view_mode">pivot,graph</field>
+        <field name="domain" eval="[('team_id', '=', ref('crm_team_travel_desk'))]"/>
+    </record>
+    <record id="action_travel_leaderboard_view_pivot" model="ir.actions.act_window.view">
+        <field name="sequence">1</field>
+        <field name="view_mode">pivot</field>
+        <field name="view_id" ref="view_travel_leaderboard_pivot"/>
+        <field name="act_window_id" ref="action_travel_leaderboard"/>
+    </record>
+
+    <!--  Main Travel Desk pipeline -->
+    <record id="action_travel_pipeline" model="ir.actions.act_window">
+        <field name="name">Travel Desk Pipeline</field>
+        <field name="res_model">crm.lead</field>
+        <field name="view_mode">kanban,list,form,activity,pivot,graph,calendar</field>
+        <field name="domain" eval="[('team_id', '=', ref('crm_team_travel_desk')), ('type', '=', 'opportunity')]"/>
+        <field name="context" eval="{'default_team_id': ref('crm_team_travel_desk'), 'default_type': 'opportunity', 'search_default_assigned_to_me': 0}"/>
+    </record>
+
+    <!-- Client Action for Main Dashboard -->
+    <record id="action_travel_crm_dashboard" model="ir.actions.client">
+        <field name="name">Dashboard</field>
+        <field name="tag">travel_crm.dashboard</field>
+    </record>
+
+</odoo>
+

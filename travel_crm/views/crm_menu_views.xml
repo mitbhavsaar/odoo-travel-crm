@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_travel_crm_root" name="Travel Desk"
+              action="action_travel_crm_dashboard"
+              web_icon="travel_crm,static/description/icon.png"
+              sequence="5"/>
+
+    <menuitem id="menu_travel_crm_dashboard" name="Dashboard"
+              parent="menu_travel_crm_root" action="action_travel_crm_dashboard" sequence="1"/>
+    <menuitem id="menu_travel_crm_pipeline" name="Pipeline"
+              parent="menu_travel_crm_root" action="action_travel_pipeline" sequence="2"/>
+    <menuitem id="menu_travel_crm_followups" name="Follow-Ups"
+              parent="menu_travel_crm_root" action="action_travel_followups" sequence="3"/>
+    <menuitem id="menu_travel_crm_calls" name="Calls"
+              parent="menu_travel_crm_root" action="action_travel_call_log" sequence="4"/>
+
+    <!--  REPORTING MENU & SUB-MENUS -->
+    <menuitem id="menu_travel_crm_reporting" name="Reporting"
+              parent="menu_travel_crm_root" sequence="8"/>
+
+    <menuitem id="menu_travel_crm_reporting_activities" name="Activities Analysis"
+              parent="menu_travel_crm_reporting" action="crm.crm_activity_report_action" sequence="1"/>
+    <menuitem id="menu_travel_crm_reporting_leads" name="Leads &amp; Opportunities Analysis"
+              parent="menu_travel_crm_reporting" action="crm.crm_opportunity_report_action" sequence="2"/>
+    <menuitem id="menu_travel_crm_reporting_calls" name="Calls &amp; SIM Analysis"
+              parent="menu_travel_crm_reporting" action="action_travel_call_log_reporting" sequence="3"/>
+    <menuitem id="menu_travel_crm_export" name="Export Activity Report (Wizard)"
+              parent="menu_travel_crm_reporting" action="action_travel_export_wizard" sequence="10"/>
+
+    <!-- CONFIGURATION MENU & SUB-MENUS -->
+    <menuitem id="menu_travel_crm_config" name="Configuration"
+              parent="menu_travel_crm_root" sequence="9"/>
+
+    <menuitem id="menu_travel_crm_packages" name="Packages"
+              parent="menu_travel_crm_config" action="action_travel_package_window" sequence="1"/>
+    <menuitem id="menu_travel_crm_destinations" name="Destinations"
+              parent="menu_travel_crm_config" action="action_travel_destination" sequence="2"/>
+    <menuitem id="menu_travel_crm_payments" name="Payment Installments"
+              parent="menu_travel_crm_config" action="action_travel_payment_installment" sequence="3"/>
+    <menuitem id="menu_travel_crm_leaderboard" name="Leaderboard"
+              parent="menu_travel_crm_config" action="action_travel_leaderboard" sequence="4"/>
+    <menuitem id="menu_travel_crm_funnel" name="Funnel"
+              parent="menu_travel_crm_config" action="action_travel_funnel" sequence="5"/>
+    <menuitem id="menu_travel_crm_settings" name="Settings"
+              parent="menu_travel_crm_config" action="action_travel_crm_config_settings" sequence="10"/>
+</odoo>
+

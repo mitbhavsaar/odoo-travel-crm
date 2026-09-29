@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- LIST VIEW -->
+    <record id="travel_package_view_tree" model="ir.ui.view">
+        <field name="name">travel.package.list</field>
+        <field name="model">travel.package</field>
+        <field name="arch" type="xml">
+            <list string="Travel Packages" multi_edit="1">
+                <field name="name"/>
+                <field name="destination_id"/>
+                <field name="package_type"/>
+                <field name="price" widget="monetary"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- FORM VIEW -->
+    <record id="travel_package_view_form" model="ir.ui.view">
+        <field name="name">travel.package.form</field>
+        <field name="model">travel.package</field>
+        <field name="arch" type="xml">
+            <form string="Travel Package">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Deluxe Goa 4D/3N Package"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="destination_id" options="{'no_create': False}"/>
+                            <field name="package_type"/>
+                            <field name="price" widget="monetary"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="active" widget="boolean_toggle"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description">
+                            <field name="description" placeholder="Enter package itinerary summary, inclusions, hotel categories, etc."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- SEARCH VIEW -->
+    <record id="travel_package_view_search" model="ir.ui.view">
+        <field name="name">travel.package.search</field>
+        <field name="model">travel.package</field>
+        <field name="arch" type="xml">
+            <search string="Travel Packages">
+                <field name="name"/>
+                <field name="destination_id"/>
+                <field name="package_type"/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <filter string="Destination" name="group_destination" context="{'group_by': 'destination_id'}"/>
+                <filter string="Package Type" name="group_package_type" context="{'group_by': 'package_type'}"/>
+            </search>
+        </field>
+    </record>
+
+
+    <!-- ACTION -->
+    <record id="action_travel_package_window" model="ir.actions.act_window">
+        <field name="name">Packages</field>
+        <field name="res_model">travel.package</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="travel_package_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new Travel Package!
+            </p>
+            <p>
+                Configure tour packages with destination and standard pricing.
+            </p>
+        </field>
+    </record>
+
+</odoo>

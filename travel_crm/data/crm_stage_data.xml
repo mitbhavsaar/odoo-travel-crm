@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Travel-agency pipeline stages, scoped to the Travel Desk team -->
+    <record id="stage_travel_inquiry" model="crm.stage">
+        <field name="name">New Inquiry</field>
+        <field name="sequence">1</field>
+        <field name="team_ids" eval="[(4, ref('crm_team_travel_desk'))]"/>
+    </record>
+    <record id="stage_travel_itinerary_shared" model="crm.stage">
+        <field name="name">Itinerary Shared</field>
+        <field name="sequence">2</field>
+        <field name="team_ids" eval="[(4, ref('crm_team_travel_desk'))]"/>
+    </record>
+    <record id="stage_travel_negotiation" model="crm.stage">
+        <field name="name">Negotiation</field>
+        <field name="sequence">3</field>
+        <field name="team_ids" eval="[(4, ref('crm_team_travel_desk'))]"/>
+    </record>
+    <record id="stage_travel_booking_confirmed" model="crm.stage">
+        <field name="name">Booking Confirmed</field>
+        <field name="sequence">4</field>
+        <field name="team_ids" eval="[(4, ref('crm_team_travel_desk'))]"/>
+    </record>
+    <record id="stage_travel_docs_payment" model="crm.stage">
+        <field name="name">Documentation &amp; Payment</field>
+        <field name="sequence">5</field>
+        <field name="team_ids" eval="[(4, ref('crm_team_travel_desk'))]"/>
+    </record>
+    <record id="stage_travel_trip_confirmed" model="crm.stage">
+        <field name="name">Trip Confirmed (Won)</field>
+        <field name="sequence">6</field>
+        <field name="is_won">True</field>
+        <field name="team_ids" eval="[(4, ref('crm_team_travel_desk'))]"/>
+    </record>
+</odoo>
