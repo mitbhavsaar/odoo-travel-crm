@@ -3,6 +3,7 @@
 import { Component, proxy, onWillStart, onMounted, signal } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
+import { loadBundle } from "@web/core/assets";
 
 function useRef(name) {
     const s = signal(null);
@@ -55,10 +56,20 @@ export class TravelCrmDashboard extends Component {
         });
 
         onWillStart(async () => {
+            try {
+                await loadBundle("web.chartjs_lib");
+            } catch (e) {
+                console.warn("Could not load web.chartjs_lib in onWillStart:", e);
+            }
             await this.loadData();
         });
 
-        onMounted(() => {
+        onMounted(async () => {
+            try {
+                await loadBundle("web.chartjs_lib");
+            } catch (e) {
+                console.warn("Could not load web.chartjs_lib in onMounted:", e);
+            }
             if (this.state.activeTab === "dashboard") {
                 this.renderAllCharts();
             }
@@ -112,26 +123,36 @@ export class TravelCrmDashboard extends Component {
         });
     }
 
-    renderAllCharts() {
+    async renderAllCharts() {
         if (!window.Chart) {
+            try {
+                await loadBundle("web.chartjs_lib");
+            } catch (e) {
+                console.warn("Chart.js asset load failed:", e);
+            }
+        }
+        const ChartClass = window.Chart || (typeof Chart !== "undefined" ? Chart : null);
+        if (!ChartClass) {
             console.warn("Chart.js not loaded in window.");
             return;
         }
         this.destroyCharts();
 
-        this.renderDonutChart();
-        this.renderTrendChart();
-        this.renderStageChart();
-        this.renderRevenueChart();
-        this.renderUserPerfChart();
+        this.renderDonutChart(ChartClass);
+        this.renderTrendChart(ChartClass);
+        this.renderStageChart(ChartClass);
+        this.renderRevenueChart(ChartClass);
+        this.renderUserPerfChart(ChartClass);
     }
 
-    renderDonutChart() {
+    renderDonutChart(ChartClass) {
         const canvas = this.donutChartCanvas.el;
         if (!canvas) return;
+        const C = ChartClass || window.Chart;
+        if (!C) return;
 
         const srcData = this.state.data.lead_source_summary;
-        this.charts.donut = new window.Chart(canvas, {
+        this.charts.donut = new C(canvas, {
             type: "doughnut",
             data: {
                 labels: srcData.labels,
@@ -166,12 +187,14 @@ export class TravelCrmDashboard extends Component {
         });
     }
 
-    renderTrendChart() {
+    renderTrendChart(ChartClass) {
         const canvas = this.trendChartCanvas.el;
         if (!canvas) return;
+        const C = ChartClass || window.Chart;
+        if (!C) return;
 
         const trend = this.state.data.trend_analysis;
-        this.charts.trend = new window.Chart(canvas, {
+        this.charts.trend = new C(canvas, {
             type: "line",
             data: {
                 labels: trend.labels,
@@ -210,12 +233,14 @@ export class TravelCrmDashboard extends Component {
         });
     }
 
-    renderStageChart() {
+    renderStageChart(ChartClass) {
         const canvas = this.stageChartCanvas.el;
         if (!canvas) return;
+        const C = ChartClass || window.Chart;
+        if (!C) return;
 
         const stage = this.state.data.stage_analysis;
-        this.charts.stage = new window.Chart(canvas, {
+        this.charts.stage = new C(canvas, {
             type: "bar",
             data: {
                 labels: stage.labels,
@@ -242,12 +267,14 @@ export class TravelCrmDashboard extends Component {
         });
     }
 
-    renderRevenueChart() {
+    renderRevenueChart(ChartClass) {
         const canvas = this.revenueChartCanvas.el;
         if (!canvas) return;
+        const C = ChartClass || window.Chart;
+        if (!C) return;
 
         const rev = this.state.data.revenue_summary;
-        this.charts.revenue = new window.Chart(canvas, {
+        this.charts.revenue = new C(canvas, {
             type: "bar",
             data: {
                 labels: rev.labels,
@@ -274,12 +301,14 @@ export class TravelCrmDashboard extends Component {
         });
     }
 
-    renderUserPerfChart() {
+    renderUserPerfChart(ChartClass) {
         const canvas = this.userPerfChartCanvas.el;
         if (!canvas) return;
+        const C = ChartClass || window.Chart;
+        if (!C) return;
 
         const user = this.state.data.user_performance;
-        this.charts.userPerf = new window.Chart(canvas, {
+        this.charts.userPerf = new C(canvas, {
             type: "bar",
             data: {
                 labels: user.labels,

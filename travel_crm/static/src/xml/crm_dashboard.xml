@@ -471,9 +471,9 @@
                                         <t t-foreach="this.state.data.recent_calls" t-as="call" t-key="call.id">
                                             <tr>
                                                 <td class="fw-bold" t-esc="call.number"></td>
-                                                <td><span class="badge bg-secondary" t-esc="call.type"></span></td>
+                                                <td><span class="" t-esc="call.type"></span></td>
                                                 <td t-esc="call.duration"></td>
-                                                <td><span class="badge-pill badge-fresh" t-esc="call.disposition"></span></td>
+                                                <td><span class="" t-esc="call.disposition"></span></td>
                                                 <td>
                                                     <t t-if="call.has_recording">
                                                         <div class="d-flex align-items-center gap-2">
@@ -490,7 +490,12 @@
                                                     </t>
                                                 </td>
                                                 <td>
-                                                    <span class="badge bg-primary" t-esc="call.score + '/100'"></span>
+                                                    <t t-if="call.score &gt; 0">
+                                                        <span class="badge" t-esc="call.score + '/100'"></span>
+                                                    </t>
+                                                    <t t-if="!call.score or call.score == 0">
+                                                        <span class="text-muted">Not Scored</span>
+                                                    </t>
                                                 </td>
                                                 <td t-esc="call.agent"></td>
                                                 <td t-esc="call.date"></td>

@@ -199,19 +199,56 @@ class TravelDashboard(models.TransientModel):
                                 20 if (date_range == 'this_month' and total_db_leads == 0) else 0]
                 stage_colors = stage_palette
 
-            # Conversion Trend
-            trend_labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep']
-            trend_total = [120, 150, 180, 220, 260, 310, 290, 340, 410]
-            trend_converted = [20, 35, 45, 60, 80, 110, 95, 125, 160]
+            # 1. Dynamic Conversion Trend for Travel Desk Leads
+            today = date.today()
+            trend_labels = []
+            trend_total = []
+            trend_converted = []
 
-            # Revenue Summary
-            revenue_labels = ['Bali', 'Europe', 'Dubai', 'Thailand', 'Maldives', 'Domestic']
-            revenue_data = [450000, 1200000, 680000, 320000, 890000, 250000]
+            for i in range(5, -1, -1):
+                m_start = (today.replace(day=1) - relativedelta(months=i))
+                m_end = m_start + relativedelta(months=1, days=-1)
+                m_start_dt = datetime.combine(m_start, datetime.min.time())
+                m_end_dt = datetime.combine(m_end, datetime.max.time())
 
-            # User Performance
-            users = self.env['res.users'].search([('share', '=', False)], limit=5)
-            user_labels = [u.name for u in users] if users else ['Agent Sales 1', 'Agent Sales 2', 'Agent Sales 3', 'Agent Sales 4']
-            user_data = [42, 35, 28, 19] if users else [45, 38, 25, 18]
+                m_domain = [('create_date', '>=', m_start_dt), ('create_date', '<=', m_end_dt)]
+                if travel_team:
+                    m_domain = m_domain + ['|', ('team_id', '=', travel_team.id), ('x_is_travel_lead', '=', True)]
+                else:
+                    m_domain = m_domain + [('x_is_travel_lead', '=', True)]
+
+                m_leads = Lead.with_context(active_test=False).search(m_domain)
+                conv_cnt = len([l for l in m_leads if is_converted(l)])
+
+                trend_labels.append(m_start.strftime('%b'))
+                trend_total.append(len(m_leads))
+                trend_converted.append(conv_cnt)
+
+            # 2. Dynamic Revenue Summary by Destination for Travel Desk
+            dest_revenue_map = {}
+            for l in active_leads:
+                dest_name = l.x_destination_id.name if l.x_destination_id else 'Unspecified'
+                dest_revenue_map[dest_name] = dest_revenue_map.get(dest_name, 0.0) + (l.expected_revenue or 0.0)
+
+            if dest_revenue_map:
+                revenue_labels = list(dest_revenue_map.keys())
+                revenue_data = list(dest_revenue_map.values())
+            else:
+                revenue_labels = ['Unspecified']
+                revenue_data = [0]
+
+            # 3. Dynamic Sales Rep Performance for Travel Desk
+            user_lead_map = {}
+            for l in active_leads:
+                uname = l.user_id.name if l.user_id else 'Unassigned'
+                user_lead_map[uname] = user_lead_map.get(uname, 0) + 1
+
+            if user_lead_map:
+                user_labels = list(user_lead_map.keys())
+                user_data = list(user_lead_map.values())
+            else:
+                user_labels = ['Unassigned']
+                user_data = [0]
 
             # 6. Detailed Sub-View Tab Datasets
             recent_leads_list = []
@@ -242,19 +279,34 @@ class TravelDashboard(models.TransientModel):
             for call in call_logs[:20]:
                 rec_url = getattr(call, 'recording_url', False)
                 rec_file = getattr(call, 'recording_file', False)
-                audio_src = f"/web/content/travel.call.log/{call.id}/recording_file/{getattr(call, 'recording_filename', 'call_recording.mp3') or 'call_recording.mp3'}" if rec_file else (rec_url or 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3')
+                has_rec = bool(rec_file or rec_url)
+                if rec_file:
+                    audio_src = f"/web/content/travel.call.log/{call.id}/recording_file/{getattr(call, 'recording_filename', 'call_recording.mp3') or 'call_recording.mp3'}"
+                elif rec_url:
+                    audio_src = rec_url
+                else:
+                    audio_src = False
+
+                call_type_val = getattr(call, 'call_type', 'outgoing') or 'outgoing'
+                call_type_label = str(call_type_val).replace('_', ' ').title()
+
+                disp_val = getattr(call, 'call_disposition', False)
+                disp_label = str(disp_val).replace('_', ' ').title() if disp_val else 'Fresh'
+
+                score_val = getattr(call, 'ai_overall_score', 0) or 0
+
                 recent_calls_list.append({
                     'id': call.id,
                     'number': getattr(call, 'caller_number', '-') or '-',
-                    'type': getattr(call, 'call_type', 'outgoing') or 'outgoing',
+                    'type': call_type_label,
                     'duration': getattr(call, 'duration_display', '0:00') or '0:00',
-                    'disposition': getattr(call, 'call_disposition', 'fresh') or 'fresh',
-                    'score': getattr(call, 'ai_overall_score', 0) or 0,
-                    'sentiment': getattr(call, 'ai_sentiment', 'neutral') or 'neutral',
+                    'disposition': disp_label,
+                    'score': score_val,
+                    'sentiment': (getattr(call, 'ai_sentiment', 'neutral') or 'neutral').title(),
                     'agent': call.agent_id.name if call.agent_id else 'Agent',
                     'date': call.call_datetime.strftime('%Y-%m-%d %H:%M') if call.call_datetime else '',
                     'recording_url': audio_src,
-                    'has_recording': True,
+                    'has_recording': has_rec,
                 })
 
             recent_contacts_list = []
@@ -341,9 +393,11 @@ class TravelDashboard(models.TransientModel):
                 }
             }
         except Exception as e:
-            # Safe fallback with active database search for leads & contacts
+            import logging
+            logging.getLogger(__name__).warning("Dashboard data error: %s", str(e))
             fallback_leads = []
             fallback_contacts = []
+            fallback_calls = []
             try:
                 for l in self.env['crm.lead'].sudo().search([], order='id desc', limit=20):
                     fallback_leads.append({
@@ -366,6 +420,24 @@ class TravelDashboard(models.TransientModel):
                         'email': p.email or '-',
                         'city': p.city or '-',
                         'country': p.country_id.name if p.country_id else 'India',
+                    })
+                for call in self.env['travel.call.log'].sudo().search([], order='call_datetime desc', limit=20):
+                    rec_url = getattr(call, 'recording_url', False)
+                    rec_file = getattr(call, 'recording_file', False)
+                    has_rec = bool(rec_file or rec_url)
+                    audio_src = f"/web/content/travel.call.log/{call.id}/recording_file/{getattr(call, 'recording_filename', 'call_recording.mp3') or 'call_recording.mp3'}" if rec_file else (rec_url if rec_url else False)
+                    fallback_calls.append({
+                        'id': call.id,
+                        'number': getattr(call, 'caller_number', '-') or '-',
+                        'type': (getattr(call, 'call_type', 'outgoing') or 'outgoing').title(),
+                        'duration': getattr(call, 'duration_display', '0:00') or '0:00',
+                        'disposition': (getattr(call, 'call_disposition', 'fresh') or 'fresh').title(),
+                        'score': getattr(call, 'ai_overall_score', 0) or 0,
+                        'sentiment': (getattr(call, 'ai_sentiment', 'neutral') or 'neutral').title(),
+                        'agent': call.agent_id.name if call.agent_id else 'Agent',
+                        'date': call.call_datetime.strftime('%Y-%m-%d %H:%M') if call.call_datetime else '',
+                        'recording_url': audio_src,
+                        'has_recording': has_rec,
                     })
             except Exception:
                 pass
@@ -399,20 +471,20 @@ class TravelDashboard(models.TransientModel):
                     'colors': ['#9C27B0', '#2196F3', '#00BCD4', '#4CAF50', '#FF9800', '#7141C8'],
                 },
                 'trend_analysis': {
-                    'labels': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
-                    'total': [120, 150, 180, 220, 260, 310, 290, 340, 410],
-                    'converted': [20, 35, 45, 60, 80, 110, 95, 125, 160],
+                    'labels': trend_labels if 'trend_labels' in locals() and trend_labels else ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+                    'total': trend_total if 'trend_total' in locals() and trend_total else [0, 0, 0, 0, 0, 0],
+                    'converted': trend_converted if 'trend_converted' in locals() and trend_converted else [0, 0, 0, 0, 0, 0],
                 },
                 'revenue_summary': {
-                    'labels': ['Bali', 'Europe', 'Dubai', 'Thailand', 'Maldives', 'Domestic'],
-                    'data': [450000, 1200000, 680000, 320000, 890000, 250000],
+                    'labels': revenue_labels if 'revenue_labels' in locals() and revenue_labels else ['Unspecified'],
+                    'data': revenue_data if 'revenue_data' in locals() and revenue_data else [0],
                 },
                 'user_performance': {
-                    'labels': ['Agent Sales 1', 'Agent Sales 2', 'Agent Sales 3', 'Agent Sales 4'],
-                    'data': [45, 38, 25, 18],
+                    'labels': user_labels if 'user_labels' in locals() and user_labels else ['Unassigned'],
+                    'data': user_data if 'user_data' in locals() and user_data else [0],
                 },
                 'recent_leads': fallback_leads,
-                'recent_calls': [],
+                'recent_calls': fallback_calls,
                 'recent_contacts': fallback_contacts,
                 'recent_activities': [],
                 'settings_info': {
