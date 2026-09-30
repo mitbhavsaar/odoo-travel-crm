@@ -39,6 +39,8 @@ follow-up dashboards, and a rep leaderboard) for a travel-agency vertical:
   full two-way synced messaging.
 """,
     'author': 'Mit Bhavsar',
+    'price':149.00,
+    'currency':'USD',
     'depends': ['crm', 'account', 'sale_crm', 'mail', 'sms', 'calendar', 'base_automation', 'voip', 'website', 'portal'],
     'data': [
         'security/ir.access.csv',
