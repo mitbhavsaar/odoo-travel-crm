@@ -10,14 +10,14 @@
 
             <!-- Header button: Qualify Lead Wizard (Hidden once qualified) -->
             <xpath expr="//header" position="inside">
-                <field name="x_is_qualified" invisible="1"/>
-                <field name="x_invoice_count" invisible="1"/>
+                <field name="is_qualified" invisible="1"/>
+                <field name="invoice_count" invisible="1"/>
                 <button name="action_open_qualification_wizard" type="object"
                         string="Qualify Lead" class="btn-primary" icon="fa-check-square-o"
-                        invisible="not x_is_travel_lead or x_is_qualified"/>
+                        invisible="not is_travel_lead or is_qualified"/>
                 <button name="action_create_invoice" type="object"
                         string="Create Invoice" class="btn-primary" icon="fa-file-text-o"
-                        invisible="not x_is_travel_lead or not x_booking_reference or x_invoice_count > 0"/>
+                        invisible="not is_travel_lead or not booking_reference or invoice_count > 0"/>
 
             </xpath>
 
@@ -37,32 +37,32 @@
                             <field class="text-break" options="{'line_breaks': False}" widget="text" name="name" placeholder="e.g. Product Pricing"/>
                         </h1>
                     </div>
-                    <div class="ms-3 mt-1" invisible="not x_is_travel_lead">
-                        <field name="x_call_disposition" widget="badge" nolabel="1" class="fs-6 px-3 py-2"
-                               decoration-info="x_call_disposition == 'fresh'"
-                               decoration-warning="x_call_disposition in ('rnr','call_back')"
-                               decoration-success="x_call_disposition in ('interested','converted')"
-                               decoration-danger="x_call_disposition == 'not_interested'"/>
+                    <div class="ms-3 mt-1" invisible="not is_travel_lead">
+                        <field name="call_disposition" widget="badge" nolabel="1" class="fs-6 px-3 py-2"
+                               decoration-info="call_disposition == 'fresh'"
+                               decoration-warning="call_disposition in ('rnr','call_back')"
+                               decoration-success="call_disposition in ('interested','converted')"
+                               decoration-danger="call_disposition == 'not_interested'"/>
                     </div>
                 </div>
             </xpath>
 
             <!-- Editable Call Disposition field under Tags -->
             <xpath expr="//field[@name='tag_ids']" position="after">
-                <field name="x_call_disposition" string="Call Disposition" invisible="not x_is_travel_lead"/>
+                <field name="call_disposition" string="Call Disposition" invisible="not is_travel_lead"/>
             </xpath>
 
             <!--  Smart button: call count / last AI score & Invoices -->
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button name="action_view_call_logs" type="object"
                         class="oe_stat_button" icon="fa-phone"
-                        invisible="not x_is_travel_lead">
-                    <field name="x_call_count" widget="statinfo" string="Calls"/>
+                        invisible="not is_travel_lead">
+                    <field name="call_count" widget="statinfo" string="Calls"/>
                 </button>
                 <button name="action_view_invoices" type="object"
                         class="oe_stat_button" icon="fa-file-text-o"
-                        invisible="not x_is_travel_lead or x_invoice_count == 0">
-                    <field name="x_invoice_count" widget="statinfo" string="Invoices"/>
+                        invisible="not is_travel_lead or invoice_count == 0">
+                    <field name="invoice_count" widget="statinfo" string="Invoices"/>
                 </button>
             </xpath>
 
@@ -70,66 +70,66 @@
             <xpath expr="//field[@name='phone']" position="after">
                 <button name="action_open_whatsapp" type="object"
                         string="WhatsApp" icon="fa-whatsapp" class="btn-link"
-                        invisible="not x_is_travel_lead or not x_whatsapp_link"/>
+                        invisible="not is_travel_lead or not whatsapp_link"/>
             </xpath>
 
             <xpath expr="//page[@name='internal_notes']" position="after">
 
-                <page string="Travel Details" name="travel_details" invisible="not x_is_travel_lead">
+                <page string="Travel Details" name="travel_details" invisible="not is_travel_lead">
                     <group>
                         <group string="Trip">
-                            <field name="x_destination_id" options="{'no_quick_create': False}"/>
-                            <field name="x_package_id"/>
-                            <field name="x_flight_included"/>
-                            <field name="x_travel_date_from"/>
-                            <field name="x_travel_date_to"/>
+                            <field name="destination_id" options="{'no_quick_create': False}"/>
+                            <field name="package_id"/>
+                            <field name="flight_included"/>
+                            <field name="travel_date_from"/>
+                            <field name="travel_date_to"/>
                         </group>
                         <group string="Travellers">
-                            <field name="x_pax_adults"/>
-                            <field name="x_pax_children"/>
-                            <field name="x_pax_infants"/>
-                            <field name="x_total_pax"/>
+                            <field name="pax_adults"/>
+                            <field name="pax_children"/>
+                            <field name="pax_infants"/>
+                            <field name="total_pax"/>
                         </group>
                     </group>
                 </page>
 
-                <page string="Documents &amp; Payments" name="travel_docs_payments" invisible="not x_is_travel_lead">
+                <page string="Documents &amp; Payments" name="travel_docs_payments" invisible="not is_travel_lead">
                     <group>
                         <group string="Documentation">
-                            <field name="x_visa_required"/>
-                            <field name="x_visa_status" invisible="not x_visa_required"/>
-                            <field name="x_kyc_status"/>
-                            <field name="x_travel_insurance"/>
+                            <field name="visa_required"/>
+                            <field name="visa_status" invisible="not visa_required"/>
+                            <field name="kyc_status"/>
+                            <field name="travel_insurance"/>
                         </group>
                         <group string="Booking">
-                            <field name="x_booking_reference"/>
-                            <label for="x_itinerary_sent"/>
+                            <field name="booking_reference"/>
+                            <label for="itinerary_sent"/>
                             <div class="d-flex align-items-center gap-2">
-                                <field name="x_itinerary_sent" readonly="1" class="mb-0"/>
+                                <field name="itinerary_sent" readonly="1" class="mb-0"/>
                                 <button name="action_mark_itinerary_sent" type="object"
                                         string="Mark Itinerary as Shared" class="btn btn-sm btn-secondary"
                                         icon="fa-paper-plane"
-                                        invisible="x_itinerary_sent"/>
+                                        invisible="itinerary_sent"/>
                             </div>
-                            <field name="x_itinerary_sent_date" readonly="1"/>
+                            <field name="itinerary_sent_date" readonly="1"/>
                         </group>
                     </group>
                     <group>
                         <group string="Payment Summary">
                             <field name="expected_revenue" string="Package Price / Amount"/>
-                            <field name="x_amount_received"/>
-                            <field name="x_amount_pending"/>
+                            <field name="amount_received"/>
+                            <field name="amount_pending"/>
                         </group>
-                        <group string="Invoicing" invisible="x_invoice_count > 0">
+                        <group string="Invoicing" invisible="invoice_count > 0">
                             <button name="action_create_invoice" type="object"
                                     string="Create Customer Invoice" class="btn btn-primary mb-2" icon="fa-file-text-o"
-                                    invisible="not x_booking_reference or x_invoice_count > 0"/>
+                                    invisible="not booking_reference or invoice_count > 0"/>
                         </group>
 
                     </group>
-                    <notebook invisible="x_invoice_count == 0">
+                    <notebook invisible="invoice_count == 0">
                         <page string="Generated Customer Invoices">
-                            <field name="x_invoice_ids" readonly="1">
+                            <field name="invoice_ids" readonly="1">
                                 <list string="Invoices">
                                     <field name="name"/>
                                     <field name="invoice_date"/>
@@ -146,17 +146,17 @@
                 </page>
 
 
-                <page string="AI Lead Summary" name="ai_lead_summary" invisible="not x_is_travel_lead">
+                <page string="AI Lead Summary" name="ai_lead_summary" invisible="not is_travel_lead">
                     <button name="action_generate_ai_summary" type="object"
                             string="Generate AI Summary" class="btn-primary" icon="fa-magic"/>
                     <group>
-                        <field name="x_ai_generated_on" readonly="1"/>
+                        <field name="ai_generated_on" readonly="1"/>
                     </group>
                     <group string="Summary">
-                        <field name="x_ai_lead_summary" nolabel="1" readonly="1"/>
+                        <field name="ai_lead_summary" nolabel="1" readonly="1"/>
                     </group>
                     <group string="Suggested Next Step">
-                        <field name="x_ai_next_step" nolabel="1" readonly="1"/>
+                        <field name="ai_next_step" nolabel="1" readonly="1"/>
                     </group>
                     <div class="alert alert-info mt-3" role="alert">
                         Live WhatsApp messaging (send/receive inside the chatter) isn't
@@ -168,8 +168,8 @@
                     </div>
                 </page>
 
-                <page string="Calls &amp; AI Coaching" name="travel_calls" invisible="not x_is_travel_lead">
-                    <field name="x_call_log_ids">
+                <page string="Calls &amp; AI Coaching" name="travel_calls" invisible="not is_travel_lead">
+                    <field name="call_log_ids">
                         <list editable="bottom">
                             <field name="call_datetime"/>
                             <field name="call_type" widget="badge"/>
@@ -201,10 +201,10 @@
                 <attribute name="export_xlsx">0</attribute>
             </xpath>
             <field name="stage_id" position="after">
-                <field name="x_phone_masked" string="Phone (Display)" optional="show" groups="base.group_user"/>
-                <field name="x_destination_id" optional="show" invisible="not x_is_travel_lead"/>
-                <field name="x_travel_date_from" optional="show" invisible="not x_is_travel_lead"/>
-                <field name="x_call_disposition" optional="hide" widget="badge" invisible="not x_is_travel_lead"/>
+                <field name="phone_masked" string="Phone (Display)" optional="show" groups="base.group_user"/>
+                <field name="destination_id" optional="show" invisible="not is_travel_lead"/>
+                <field name="travel_date_from" optional="show" invisible="not is_travel_lead"/>
+                <field name="call_disposition" optional="hide" widget="badge" invisible="not is_travel_lead"/>
             </field>
         </field>
     </record>
@@ -216,9 +216,9 @@
         <field name="inherit_id" ref="crm.crm_case_kanban_view_leads"/>
         <field name="arch" type="xml">
             <field name="expected_revenue" position="after">
-                <field name="x_is_travel_lead" invisible="1"/>
-                <field name="x_destination_id" invisible="not x_is_travel_lead"/>
-                <field name="x_call_disposition" invisible="not x_is_travel_lead"/>
+                <field name="is_travel_lead" invisible="1"/>
+                <field name="destination_id" invisible="not is_travel_lead"/>
+                <field name="call_disposition" invisible="not is_travel_lead"/>
             </field>
         </field>
     </record>

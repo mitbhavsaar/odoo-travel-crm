@@ -13,7 +13,7 @@ class TravelCallLog(models.Model):
     lead_id = fields.Many2one('crm.lead', string='Lead / Opportunity', ondelete='cascade', index=True)
     agent_id = fields.Many2one('res.users', string='Agent', default=lambda self: self.env.user)
     team_id = fields.Many2one(related='lead_id.team_id', store=True, string='Sales Team')
-    x_voip_call_id = fields.Many2one('voip.call', string='VoIP Call Log', ondelete='set null', index=True)
+    voip_call_id = fields.Many2one('voip.call', string='VoIP Call Log', ondelete='set null', index=True)
 
     # -- Call metadata (mirrors the fields on TeleCRM's Export Activity
     #    Report: Called On, Call Start Time, Call Type, Duration, Feedback,
@@ -47,7 +47,7 @@ class TravelCallLog(models.Model):
     recording_player_html = fields.Html(compute='_compute_recording_player_html', string='Audio Player')
 
     call_disposition = fields.Selection(
-        selection=lambda self: self.env['crm.lead']._fields['x_call_disposition'].selection,
+        selection=lambda self: self.env['crm.lead']._fields['call_disposition'].selection,
         string='Disposition')
 
     @api.depends('recording_file', 'recording_filename', 'recording_url')
@@ -162,19 +162,19 @@ class TravelCallLog(models.Model):
         for vals in vals_list:
             if 'lead_id' in vals and vals['lead_id'] and not vals.get('call_disposition'):
                 lead = self.env['crm.lead'].browse(vals['lead_id'])
-                if lead and lead.x_call_disposition and lead.x_call_disposition != 'fresh':
-                    vals['call_disposition'] = lead.x_call_disposition
+                if lead and lead.call_disposition and lead.call_disposition != 'fresh':
+                    vals['call_disposition'] = lead.call_disposition
         recs = super().create(vals_list)
         for rec in recs:
-            if rec.lead_id and rec.call_disposition and rec.call_disposition != rec.lead_id.x_call_disposition:
-                rec.lead_id.x_call_disposition = rec.call_disposition
+            if rec.lead_id and rec.call_disposition and rec.call_disposition != rec.lead_id.call_disposition:
+                rec.lead_id.call_disposition = rec.call_disposition
         return recs
 
     def write(self, vals):
         res = super().write(vals)
         if 'call_disposition' in vals:
             for rec in self:
-                if rec.lead_id and rec.call_disposition and rec.call_disposition != rec.lead_id.x_call_disposition:
-                    rec.lead_id.x_call_disposition = rec.call_disposition
+                if rec.lead_id and rec.call_disposition and rec.call_disposition != rec.lead_id.call_disposition:
+                    rec.lead_id.call_disposition = rec.call_disposition
         return res
 

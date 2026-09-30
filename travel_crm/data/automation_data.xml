@@ -70,8 +70,8 @@
         <field name="name">Travel: Call Back Later Reminder</field>
         <field name="model_id" ref="crm.model_crm_lead"/>
         <field name="trigger">on_create_or_write</field>
-        <field name="filter_pre_domain">[('x_call_disposition', '!=', 'call_back')]</field>
-        <field name="filter_domain">[('x_call_disposition', '=', 'call_back')]</field>
+        <field name="filter_pre_domain">[('call_disposition', '!=', 'call_back')]</field>
+        <field name="filter_domain">[('call_disposition', '=', 'call_back')]</field>
     </record>
     <record id="action_call_back_later" model="ir.actions.server">
         <field name="name">Schedule call-back reminder</field>

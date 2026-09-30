@@ -10,6 +10,9 @@ from . import travel_voip
 from . import account_move
 from . import travel_lead_invoice_wizard
 from . import res_config_settings
+from . import travel_itinerary
+from . import travel_ocr
+from . import travel_sla
 
 
 

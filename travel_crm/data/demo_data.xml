@@ -24,12 +24,12 @@
         <field name="partner_name">361 Travel</field>
         <field name="phone">+919512722727</field>
         <field name="email_from">manish@361travel.example</field>
-        <field name="x_destination_id" ref="destination_bali"/>
-        <field name="x_package_type">group</field>
-        <field name="x_pax_adults">4</field>
+        <field name="destination_id" ref="destination_bali"/>
+        <field name="package_type">group</field>
+        <field name="pax_adults">4</field>
         <field name="expected_revenue">180000</field>
-        <field name="x_call_disposition">interested</field>
-        <field name="x_itinerary_sent">True</field>
+        <field name="call_disposition">interested</field>
+        <field name="itinerary_sent">True</field>
         <field name="user_id" ref="base.user_admin"/>
     </record>
 
@@ -41,11 +41,11 @@
         <field name="contact_name">Priya Sharma</field>
         <field name="phone">+919812345678</field>
         <field name="email_from">priya.sharma@example.com</field>
-        <field name="x_destination_id" ref="destination_dubai"/>
-        <field name="x_package_type">honeymoon</field>
-        <field name="x_pax_adults">2</field>
+        <field name="destination_id" ref="destination_dubai"/>
+        <field name="package_type">honeymoon</field>
+        <field name="pax_adults">2</field>
         <field name="expected_revenue">220000</field>
-        <field name="x_call_disposition">interested</field>
+        <field name="call_disposition">interested</field>
         <field name="user_id" ref="base.user_admin"/>
     </record>
 
@@ -57,13 +57,13 @@
         <field name="contact_name">Ravi Kumar</field>
         <field name="phone">+919845098450</field>
         <field name="email_from">ravi.kumar@example.com</field>
-        <field name="x_destination_id" ref="destination_kerala"/>
-        <field name="x_package_type">fit</field>
-        <field name="x_pax_adults">2</field>
-        <field name="x_pax_children">2</field>
+        <field name="destination_id" ref="destination_kerala"/>
+        <field name="package_type">fit</field>
+        <field name="pax_adults">2</field>
+        <field name="pax_children">2</field>
         <field name="expected_revenue">95000</field>
-        <field name="x_call_disposition">converted</field>
-        <field name="x_kyc_status">submitted</field>
+        <field name="call_disposition">converted</field>
+        <field name="kyc_status">submitted</field>
         <field name="user_id" ref="base.user_admin"/>
     </record>
 
@@ -90,11 +90,11 @@
         <field name="contact_name">Anita Desai</field>
         <field name="phone">+919900112233</field>
         <field name="email_from">anita.desai@example.com</field>
-        <field name="x_destination_id" ref="destination_switzerland"/>
-        <field name="x_package_type">customized</field>
-        <field name="x_pax_adults">2</field>
+        <field name="destination_id" ref="destination_switzerland"/>
+        <field name="package_type">customized</field>
+        <field name="pax_adults">2</field>
         <field name="expected_revenue">340000</field>
-        <field name="x_call_disposition">fresh</field>
+        <field name="call_disposition">fresh</field>
         <field name="user_id" ref="base.user_admin"/>
     </record>
 

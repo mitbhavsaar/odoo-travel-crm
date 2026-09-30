@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="crm_lead_view_form_travel_itinerary" model="ir.ui.view">
+        <field name="name">crm.lead.form.travel.itinerary</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+
+            <!-- Header buttons for AI Itinerary & Web Portal Sharing -->
+            <xpath expr="//header" position="inside">
+                <button name="action_generate_ai_itinerary" type="object"
+                        string="🤖 Generate AI Itinerary" class="btn-primary" icon="fa-magic"
+                        invisible="not is_travel_lead"/>
+                <button name="action_share_itinerary_portal" type="object"
+                        string="🌐 Share Portal Link" class="btn-success" icon="fa-paper-plane"
+                        invisible="not is_travel_lead or not itinerary_line_ids"/>
+                <button name="action_preview_itinerary_portal" type="object"
+                        string="👁️ Preview Portal" class="btn-outline-primary" icon="fa-external-link"
+                        invisible="not is_travel_lead or not portal_access_token"/>
+            </xpath>
+
+            <!-- Add "Day-Wise Itinerary" Tab in Notebook -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Day-Wise Itinerary" name="travel_itinerary_tab" invisible="not is_travel_lead">
+                    <group>
+                        <group string="Itinerary Status &amp; Portal">
+                            <field name="itinerary_status" widget="badge"
+                                   decoration-info="itinerary_status == 'draft'"
+                                   decoration-primary="itinerary_status == 'shared'"
+                                   decoration-success="itinerary_status == 'accepted'"
+                                   decoration-warning="itinerary_status == 'change_requested'"/>
+                            <field name="itinerary_sent_date" readonly="1"/>
+                            <field name="portal_url" widget="url" readonly="1" string="Portal Web Link"/>
+                            <field name="portal_access_token" readonly="1" groups="base.group_no_one"/>
+                        </group>
+                        <group string="Customer Action Items">
+                            <field name="customer_feedback_notes"
+                                   invisible="not customer_feedback_notes"
+                                   style="color: #d97706; font-weight: bold; background: #fffbe0; padding: 10px; border-radius: 6px;"/>
+                        </group>
+                    </group>
+
+                    <separator string="Day-by-Day Schedule"/>
+                    <field name="itinerary_line_ids" mode="list,form">
+                        <list editable="bottom" default_order="sequence, day_number, id">
+                            <field name="sequence" widget="handle"/>
+                            <field name="day_number" string="Day #"/>
+                            <field name="activity_type"/>
+                            <field name="title"/>
+                            <field name="meals_included"/>
+                            <field name="description"/>
+                        </list>
+                        <form string="Itinerary Day Detail">
+                            <group>
+                                <group>
+                                    <field name="day_number"/>
+                                    <field name="activity_type"/>
+                                    <field name="title"/>
+                                </group>
+                                <group>
+                                    <field name="meals_included"/>
+                                    <field name="sequence"/>
+                                </group>
+                            </group>
+                            <notebook>
+                                <page string="Activities &amp; Details">
+                                    <field name="description" placeholder="Describe the morning, afternoon, and evening activities for this day..."/>
+                                </page>
+                            </notebook>
+                        </form>
+                    </field>
+
+                    <group class="mt-4">
+                        <group string="✅ Package Inclusions">
+                            <field name="itinerary_inclusions" nolabel="1" placeholder="Enter list of inclusions..."/>
+                        </group>
+                        <group string="❌ Package Exclusions">
+                            <field name="itinerary_exclusions" nolabel="1" placeholder="Enter list of exclusions..."/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

@@ -50,16 +50,16 @@ class TravelLeadQualificationWizard(models.TransientModel):
                 valid_disp = [k for k, _ in self._fields['call_disposition'].selection]
                 res.update({
                     'lead_id': lead.id,
-                    'destination_id': lead.x_destination_id.id if lead.x_destination_id else False,
-                    'travel_date_from': lead.x_travel_date_from,
-                    'travel_date_to': lead.x_travel_date_to,
-                    'pax_adults': lead.x_pax_adults or 1,
-                    'pax_children': lead.x_pax_children or 0,
-                    'pax_infants': lead.x_pax_infants or 0,
-                    'package_type': lead.x_package_type if lead.x_package_type in valid_pkg else 'fit',
-                    'flight_included': lead.x_flight_included if hasattr(lead, 'x_flight_included') else True,
+                    'destination_id': lead.destination_id.id if lead.destination_id else False,
+                    'travel_date_from': lead.travel_date_from,
+                    'travel_date_to': lead.travel_date_to,
+                    'pax_adults': lead.pax_adults or 1,
+                    'pax_children': lead.pax_children or 0,
+                    'pax_infants': lead.pax_infants or 0,
+                    'package_type': lead.package_type if lead.package_type in valid_pkg else 'fit',
+                    'flight_included': lead.flight_included if hasattr(lead, 'flight_included') else True,
                     'total_budget': lead.expected_revenue or 0.0,
-                    'call_disposition': lead.x_call_disposition if lead.x_call_disposition in valid_disp else 'interested',
+                    'call_disposition': lead.call_disposition if lead.call_disposition in valid_disp else 'interested',
                 })
         return res
 
@@ -69,19 +69,19 @@ class TravelLeadQualificationWizard(models.TransientModel):
 
         # 1. Update lead values
         lead_vals = {
-            'x_destination_id': self.destination_id.id if self.destination_id else False,
-            'x_travel_date_from': self.travel_date_from,
-            'x_travel_date_to': self.travel_date_to,
-            'x_pax_adults': self.pax_adults,
-            'x_pax_children': self.pax_children,
-            'x_pax_infants': self.pax_infants,
-            'x_package_type': self.package_type,
-            'x_call_disposition': self.call_disposition,
+            'destination_id': self.destination_id.id if self.destination_id else False,
+            'travel_date_from': self.travel_date_from,
+            'travel_date_to': self.travel_date_to,
+            'pax_adults': self.pax_adults,
+            'pax_children': self.pax_children,
+            'pax_infants': self.pax_infants,
+            'package_type': self.package_type,
+            'call_disposition': self.call_disposition,
         }
         if self.total_budget:
             lead_vals['expected_revenue'] = self.total_budget
-        if hasattr(lead, 'x_flight_included'):
-            lead_vals['x_flight_included'] = self.flight_included
+        if hasattr(lead, 'flight_included'):
+            lead_vals['flight_included'] = self.flight_included
 
         # 2. Find and update stage to Qualified
         qualified_stage = self.env.ref('travel_crm.stage_travel_qualified', raise_if_not_found=False)

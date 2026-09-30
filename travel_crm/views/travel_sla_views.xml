@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="crm_lead_view_form_travel_sla" model="ir.ui.view">
+        <field name="name">crm.lead.form.travel.sla</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="priority">30</field>
+        <field name="arch" type="xml">
+
+            <!-- Add SLA Status & Reassign button under Travel Details / Header -->
+            <xpath expr="//field[@name='tag_ids']" position="after">
+                <field name="sla_status" widget="badge" string="SLA Status"
+                       invisible="not is_travel_lead"
+                       decoration-success="sla_status == 'resolved'"
+                       decoration-info="sla_status == 'on_track'"
+                       decoration-danger="sla_status == 'breached'"/>
+            </xpath>
+
+            <!-- Add SLA Details inside Travel Details Tab / Extra Info -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Smart SLA &amp; Auto-Reassignment" name="travel_sla_tab" invisible="not is_travel_lead">
+                    <group>
+                        <group string="SLA Tracking &amp; Timers">
+                            <field name="sla_status" widget="badge"
+                                   decoration-success="sla_status == 'resolved'"
+                                   decoration-info="sla_status == 'on_track'"
+                                   decoration-danger="sla_status == 'breached'"/>
+                            <field name="sla_deadline"/>
+                            <field name="last_assigned_date"/>
+                            <field name="sla_breach_count"/>
+                        </group>
+                        <group string="Manual SLA Actions &amp; Controls">
+                            <button name="action_trigger_sla_reassign_now" type="object"
+                                    string="Trigger SLA Reassign Now" class="btn-warning mt-2" icon="fa-bolt"
+                                    help="Manually triggers SLA breach auto-reassignment to next sales rep."/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

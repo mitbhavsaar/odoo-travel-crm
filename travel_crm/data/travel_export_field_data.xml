@@ -117,7 +117,7 @@
         <field name="sequence">220</field>
     </record>
     <record id="export_field_lead_destination" model="travel.export.field">
-        <field name="name">x_destination_id</field>
+        <field name="name">destination_id</field>
         <field name="label">Destination</field>
         <field name="source">lead</field>
         <field name="field_type">many2one</field>

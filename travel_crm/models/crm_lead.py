@@ -5,29 +5,29 @@ class CrmLead(models.Model):
     _inherit = 'crm.lead'
 
     # -- Vertical scoping --------------------------------------------
-    x_is_travel_lead = fields.Boolean(
+    is_travel_lead = fields.Boolean(
         compute='_compute_is_travel_lead', store=True, string='Is Travel Lead',
         help="True when this lead belongs to the Travel Desk team. Used to keep "
              "travel-specific fields/tabs from showing up on non-travel leads "
              "(e.g. a furniture or generic sales opportunity) elsewhere in CRM.")
 
     # -- Travel details -----------------------------------------------
-    x_destination_id = fields.Many2one('travel.destination', string='Destination')
-    x_package_id = fields.Many2one('travel.package', string='Travel Package', tracking=True)
-    x_travel_date_from = fields.Date(string='Travel Start Date')
-    x_travel_date_to = fields.Date(string='Travel End Date')
+    destination_id = fields.Many2one('travel.destination', string='Destination')
+    package_id = fields.Many2one('travel.package', string='Travel Package', tracking=True)
+    travel_date_from = fields.Date(string='Travel Start Date')
+    travel_date_to = fields.Date(string='Travel End Date')
 
-    @api.onchange('x_package_id')
-    def _onchange_x_package_id(self):
-        if self.x_package_id:
-            self.expected_revenue = self.x_package_id.price
-            if self.x_package_id.destination_id:
-                self.x_destination_id = self.x_package_id.destination_id
-            if self.x_package_id.package_type:
-                self.x_package_type = self.x_package_id.package_type
+    @api.onchange('package_id')
+    def _onchange_package_id(self):
+        if self.package_id:
+            self.expected_revenue = self.package_id.price
+            if self.package_id.destination_id:
+                self.destination_id = self.package_id.destination_id
+            if self.package_id.package_type:
+                self.package_type = self.package_id.package_type
 
 
-    x_package_type = fields.Selection([
+    package_type = fields.Selection([
         ('fit', 'FIT (Individual / Family)'),
         ('group', 'Group Tour'),
         ('customized', 'Customized / Bespoke'),
@@ -41,33 +41,33 @@ class CrmLead(models.Model):
         ('custom', 'Custom Tailor-Made'),
     ], string='Package Type', tracking=True)
 
-    x_pax_adults = fields.Integer('Adults', default=1)
-    x_pax_children = fields.Integer('Children', default=0)
-    x_pax_infants = fields.Integer('Infants', default=0)
-    x_total_pax = fields.Integer(compute='_compute_total_pax', store=True, string='Total Pax')
+    pax_adults = fields.Integer('Adults', default=1)
+    pax_children = fields.Integer('Children', default=0)
+    pax_infants = fields.Integer('Infants', default=0)
+    total_pax = fields.Integer(compute='_compute_total_pax', store=True, string='Total Pax')
 
     # -- Documentation --------------------------------------------------
-    x_visa_required = fields.Boolean('Visa Required')
-    x_visa_status = fields.Selection([
+    visa_required = fields.Boolean('Visa Required')
+    visa_status = fields.Selection([
         ('na', 'Not Required'),
         ('pending', 'Pending Submission'),
         ('submitted', 'Submitted'),
         ('approved', 'Approved'),
         ('rejected', 'Rejected'),
     ], default='na', string='Visa Status', tracking=True)
-    x_kyc_status = fields.Selection([
+    kyc_status = fields.Selection([
         ('pending', 'Pending'),
         ('submitted', 'Submitted'),
         ('verified', 'Verified'),
     ], default='pending', string='KYC / Travel Docs Status', tracking=True)
-    x_travel_insurance = fields.Boolean('Travel Insurance Opted')
-    x_flight_included = fields.Boolean('Flight Included', default=True)
+    travel_insurance = fields.Boolean('Travel Insurance Opted')
+    flight_included = fields.Boolean('Flight Included', default=True)
 
     # -- Sales process tracking -----------------------------------------
-    x_itinerary_sent = fields.Boolean('Itinerary Shared', tracking=True)
-    x_itinerary_sent_date = fields.Datetime('Itinerary Shared On')
-    x_booking_reference = fields.Char('Booking Reference')
-    x_call_disposition = fields.Selection([
+    itinerary_sent = fields.Boolean('Itinerary Shared', tracking=True)
+    itinerary_sent_date = fields.Datetime('Itinerary Shared On')
+    booking_reference = fields.Char('Booking Reference')
+    call_disposition = fields.Selection([
         ('fresh', 'Fresh Lead'),
         ('rnr', 'Ring No Response'),
         ('interested', 'Interested / Relevant'),
@@ -76,13 +76,13 @@ class CrmLead(models.Model):
         ('converted', 'Converted'),
     ], default='fresh', string='Call Disposition', tracking=True)
 
-    x_is_qualified = fields.Boolean(compute='_compute_x_is_qualified', string='Is Qualified')
+    is_qualified = fields.Boolean(compute='_compute_is_qualified', string='Is Qualified')
 
-    @api.depends('stage_id', 'stage_id.name', 'stage_id.sequence', 'x_call_disposition')
-    def _compute_x_is_qualified(self):
+    @api.depends('stage_id', 'stage_id.name', 'stage_id.sequence', 'call_disposition')
+    def _compute_is_qualified(self):
         for lead in self:
             stage_name = (lead.stage_id.name or '').lower()
-            lead.x_is_qualified = bool(
+            lead.is_qualified = bool(
                 'qualified' in stage_name or
                 'itinerary' in stage_name or
                 'negotiation' in stage_name or
@@ -96,40 +96,40 @@ class CrmLead(models.Model):
 
 
     # -- Payments & Invoicing ---------------------------------------------
-    x_installment_ids = fields.One2many(
+    installment_ids = fields.One2many(
         'travel.payment.installment', 'lead_id', string='Payment Installments')
-    x_invoice_ids = fields.One2many(
-        'account.move', 'x_lead_id', string='Invoices')
-    x_invoice_count = fields.Integer(
+    invoice_ids = fields.One2many(
+        'account.move', 'lead_id', string='Invoices')
+    invoice_count = fields.Integer(
         compute='_compute_invoice_count', string='Invoice Count')
-    x_amount_received = fields.Monetary(
+    amount_received = fields.Monetary(
         compute='_compute_payment_amounts', store=True,
         string='Amount Received', currency_field='company_currency')
-    x_amount_pending = fields.Monetary(
+    amount_pending = fields.Monetary(
         compute='_compute_payment_amounts', store=True,
         string='Amount Pending', currency_field='company_currency')
 
-    @api.depends('x_invoice_ids')
+    @api.depends('invoice_ids')
     def _compute_invoice_count(self):
         for lead in self:
-            lead.x_invoice_count = len(lead.x_invoice_ids)
+            lead.invoice_count = len(lead.invoice_ids)
 
 
     # -- AI lead summary (stub, mirrors TeleCRM's "Lead-IQ") -------------
-    x_ai_lead_summary = fields.Text('AI Lead Summary')
-    x_ai_next_step = fields.Text('AI Suggested Next Step')
-    x_ai_generated_on = fields.Datetime('Summary Generated On', readonly=True)
+    ai_lead_summary = fields.Text('AI Lead Summary')
+    ai_next_step = fields.Text('AI Suggested Next Step')
+    ai_generated_on = fields.Datetime('Summary Generated On', readonly=True)
 
     # -- Calls & AI coaching ----------------------------------------------
-    x_call_log_ids = fields.One2many('travel.call.log', 'lead_id', string='Call Logs')
-    x_call_count = fields.Integer(compute='_compute_call_count', string='Call Count')
-    x_last_call_ai_score = fields.Integer(
+    call_log_ids = fields.One2many('travel.call.log', 'lead_id', string='Call Logs')
+    call_count = fields.Integer(compute='_compute_call_count', string='Call Count')
+    last_call_ai_score = fields.Integer(
         compute='_compute_call_count', string='Last Call AI Score')
 
     # -- Security & Phone Masking for Non-Admin / Sales Users -----------
     mobile = fields.Char(string='Mobile')
-    x_phone_masked = fields.Char(compute='_compute_masked_phone_fields', string='Phone (Display)')
-    x_mobile_masked = fields.Char(compute='_compute_masked_phone_fields', string='Mobile (Display)')
+    phone_masked = fields.Char(compute='_compute_masked_phone_fields', string='Phone (Display)')
+    mobile_masked = fields.Char(compute='_compute_masked_phone_fields', string='Mobile (Display)')
 
     @api.depends('phone', 'mobile')
     def _compute_masked_phone_fields(self):
@@ -141,11 +141,11 @@ class CrmLead(models.Model):
         )
         for lead in self:
             if is_manager:
-                lead.x_phone_masked = lead.phone or ''
-                lead.x_mobile_masked = lead.mobile or ''
+                lead.phone_masked = lead.phone or ''
+                lead.mobile_masked = lead.mobile or ''
             else:
-                lead.x_phone_masked = self._mask_number(lead.phone)
-                lead.x_mobile_masked = self._mask_number(lead.mobile)
+                lead.phone_masked = self._mask_number(lead.phone)
+                lead.mobile_masked = self._mask_number(lead.mobile)
 
     @api.model
     def _mask_number(self, num_str):
@@ -161,15 +161,15 @@ class CrmLead(models.Model):
 
     # -- WhatsApp quick-chat (lightweight fallback; see AI Lead Summary tab
     #    for the note on Odoo Enterprise's native WhatsApp app) ------------
-    x_whatsapp_link = fields.Char(compute='_compute_whatsapp_link', string='WhatsApp Link')
+    whatsapp_link = fields.Char(compute='_compute_whatsapp_link', string='WhatsApp Link')
 
-    @api.depends('x_call_log_ids', 'x_call_log_ids.ai_overall_score', 'phone', 'mobile')
+    @api.depends('call_log_ids', 'call_log_ids.ai_overall_score', 'phone', 'mobile')
     def _compute_call_count(self):
         for lead in self:
             lead._sync_voip_calls_for_lead()
-            lead.x_call_count = len(lead.x_call_log_ids)
-            last = lead.x_call_log_ids.sorted('call_datetime', reverse=True)[:1]
-            lead.x_last_call_ai_score = last.ai_overall_score if last else 0
+            lead.call_count = len(lead.call_log_ids)
+            last = lead.call_log_ids.sorted('call_datetime', reverse=True)[:1]
+            lead.last_call_ai_score = last.ai_overall_score if last else 0
 
     def _sync_voip_calls_for_lead(self):
         self.ensure_one()
@@ -194,7 +194,7 @@ class CrmLead(models.Model):
         for lead in self:
             raw = lead.mobile or lead.phone or ''
             digits = ''.join(ch for ch in raw if ch.isdigit())
-            lead.x_whatsapp_link = 'https://web.whatsapp.com/send?phone=%s' % digits if digits else False
+            lead.whatsapp_link = 'https://web.whatsapp.com/send?phone=%s' % digits if digits else False
 
     def action_view_call_logs(self):
         self.ensure_one()
@@ -209,7 +209,7 @@ class CrmLead(models.Model):
 
     def action_open_whatsapp(self):
         self.ensure_one()
-        if not self.x_whatsapp_link:
+        if not self.whatsapp_link:
             return
         phone_num = self.mobile or self.phone or 'Unknown'
         self.message_post(
@@ -219,35 +219,48 @@ class CrmLead(models.Model):
         )
         return {
             'type': 'ir.actions.act_url',
-            'url': self.x_whatsapp_link,
+            'url': self.whatsapp_link,
             'target': 'new',
         }
 
-    @api.depends('team_id')
+    @api.depends('team_id', 'destination_id', 'package_id')
     def _compute_is_travel_lead(self):
         travel_team = self.env.ref('travel_crm.crm_team_travel_desk', raise_if_not_found=False)
         for lead in self:
-            lead.x_is_travel_lead = bool(travel_team) and lead.team_id.id == travel_team.id
+            lead.is_travel_lead = bool(
+                (travel_team and lead.team_id.id == travel_team.id) or
+                lead.destination_id or
+                lead.package_id
+            )
 
-    @api.depends('x_pax_adults', 'x_pax_children', 'x_pax_infants')
+    @api.depends('user_id', 'type')
+    def _compute_team_id(self):
+        super()._compute_team_id()
+        travel_team = self.env.ref('travel_crm.crm_team_travel_desk', raise_if_not_found=False)
+        if travel_team:
+            for lead in self:
+                if lead.is_travel_lead or self.env.context.get('default_team_id') == travel_team.id or (lead._origin and lead._origin.team_id == travel_team) or lead.destination_id or lead.package_id:
+                    lead.team_id = travel_team.id
+
+    @api.depends('pax_adults', 'pax_children', 'pax_infants')
     def _compute_total_pax(self):
         for lead in self:
-            lead.x_total_pax = (lead.x_pax_adults or 0) + (lead.x_pax_children or 0) + (lead.x_pax_infants or 0)
+            lead.total_pax = (lead.pax_adults or 0) + (lead.pax_children or 0) + (lead.pax_infants or 0)
 
-    @api.depends('x_installment_ids.amount', 'x_installment_ids.state', 'expected_revenue',
-                 'x_invoice_ids', 'x_invoice_ids.payment_state', 'x_invoice_ids.amount_total', 'x_invoice_ids.amount_residual')
+    @api.depends('installment_ids.amount', 'installment_ids.state', 'expected_revenue',
+                 'invoice_ids', 'invoice_ids.payment_state', 'invoice_ids.amount_total', 'invoice_ids.amount_residual')
     def _compute_payment_amounts(self):
         for lead in self:
-            if lead.x_invoice_ids:
-                total_inv = sum(lead.x_invoice_ids.mapped('amount_total'))
-                residual_inv = sum(lead.x_invoice_ids.mapped('amount_residual'))
+            if lead.invoice_ids:
+                total_inv = sum(lead.invoice_ids.mapped('amount_total'))
+                residual_inv = sum(lead.invoice_ids.mapped('amount_residual'))
                 received = total_inv - residual_inv
-                lead.x_amount_received = received
-                lead.x_amount_pending = max(residual_inv, 0)
+                lead.amount_received = received
+                lead.amount_pending = max(residual_inv, 0)
             else:
-                received = sum(lead.x_installment_ids.filtered(lambda i: i.state == 'paid').mapped('amount'))
-                lead.x_amount_received = received
-                lead.x_amount_pending = max((lead.expected_revenue or 0) - received, 0)
+                received = sum(lead.installment_ids.filtered(lambda i: i.state == 'paid').mapped('amount'))
+                lead.amount_received = received
+                lead.amount_pending = max((lead.expected_revenue or 0) - received, 0)
 
     def action_create_invoice(self):
         self.ensure_one()
@@ -259,14 +272,14 @@ class CrmLead(models.Model):
             'target': 'new',
             'context': {
                 'default_lead_id': self.id,
-                'default_amount': self.expected_revenue or (self.x_package_id.price if self.x_package_id else 0.0),
+                'default_amount': self.expected_revenue or (self.package_id.price if self.package_id else 0.0),
             }
         }
 
 
     def action_view_invoices(self):
         self.ensure_one()
-        invoices = self.x_invoice_ids
+        invoices = self.invoice_ids
         if len(invoices) == 1:
             return {
                 'type': 'ir.actions.act_window',
@@ -288,8 +301,8 @@ class CrmLead(models.Model):
             '|', ('name', '=ilike', '%itinerary%'), ('name', '=ilike', '%shared%')
         ], limit=1)
         vals = {
-            'x_itinerary_sent': True,
-            'x_itinerary_sent_date': fields.Datetime.now()
+            'itinerary_sent': True,
+            'itinerary_sent_date': fields.Datetime.now()
         }
         if itinerary_stage:
             vals['stage_id'] = itinerary_stage.id
@@ -326,15 +339,15 @@ class CrmLead(models.Model):
 
             display_cust_name = cust_name if cust_name else "Not provided"
 
-            destination = lead.x_destination_id.name if lead.x_destination_id else 'Not specified'
-            pkg_type = dict(lead._fields['x_package_type'].selection).get(lead.x_package_type, 'General Tour') if lead.x_package_type else 'General Tour'
-            pax = "%d Adults, %d Children, %d Infants (Total: %d)" % (lead.x_pax_adults or 0, lead.x_pax_children or 0, lead.x_pax_infants or 0, lead.x_total_pax or 0)
-            dates = "%s to %s" % (lead.x_travel_date_from or 'TBD', lead.x_travel_date_to or 'TBD')
-            disposition = dict(lead._fields['x_call_disposition'].selection).get(lead.x_call_disposition, 'Fresh') if lead.x_call_disposition else 'Fresh'
+            destination = lead.destination_id.name if lead.destination_id else 'Not specified'
+            pkg_type = dict(lead._fields['package_type'].selection).get(lead.package_type, 'General Tour') if lead.package_type else 'General Tour'
+            pax = "%d Adults, %d Children, %d Infants (Total: %d)" % (lead.pax_adults or 0, lead.pax_children or 0, lead.pax_infants or 0, lead.total_pax or 0)
+            dates = "%s to %s" % (lead.travel_date_from or 'TBD', lead.travel_date_to or 'TBD')
+            disposition = dict(lead._fields['call_disposition'].selection).get(lead.call_disposition, 'Fresh') if lead.call_disposition else 'Fresh'
             budget = "₹%s" % (lead.expected_revenue) if lead.expected_revenue else 'Not specified'
 
             call_notes = []
-            for call in lead.x_call_log_ids.sorted('call_datetime', reverse=True)[:5]:
+            for call in lead.call_log_ids.sorted('call_datetime', reverse=True)[:5]:
                 call_notes.append("Call (%s, %ds, %s): %s" % (
                     call.call_type, call.duration_seconds or 0, call.call_disposition or 'Fresh', call.note or 'No notes'
                 ))
@@ -388,9 +401,9 @@ Respond STRICTLY in valid JSON format with two keys:
                         res_json = resp.json()
                         text_resp = res_json['candidates'][0]['content']['parts'][0]['text']
                         ai_data = json.loads(text_resp)
-                        lead.x_ai_lead_summary = ai_data.get('summary', '')
-                        lead.x_ai_next_step = ai_data.get('next_step', '')
-                        lead.x_ai_generated_on = fields.Datetime.now()
+                        lead.ai_lead_summary = ai_data.get('summary', '')
+                        lead.ai_next_step = ai_data.get('next_step', '')
+                        lead.ai_generated_on = fields.Datetime.now()
                         success = True
                 except Exception as e:
                     _logger.warning("Gemini AI API call failed: %s", str(e))
@@ -414,9 +427,9 @@ Respond STRICTLY in valid JSON format with two keys:
                     if resp.status_code == 200:
                         text_resp = resp.json()['choices'][0]['message']['content']
                         ai_data = json.loads(text_resp)
-                        lead.x_ai_lead_summary = ai_data.get('summary', '')
-                        lead.x_ai_next_step = ai_data.get('next_step', '')
-                        lead.x_ai_generated_on = fields.Datetime.now()
+                        lead.ai_lead_summary = ai_data.get('summary', '')
+                        lead.ai_next_step = ai_data.get('next_step', '')
+                        lead.ai_generated_on = fields.Datetime.now()
                         success = True
                 except Exception as e:
                     _logger.warning("NVIDIA AI API call failed: %s", str(e))
@@ -424,18 +437,18 @@ Respond STRICTLY in valid JSON format with two keys:
             if not success:
                 note_count = len(lead.message_ids)
                 lead_name_str = cust_name if cust_name else "The client"
-                dates_info = f" scheduled between {lead.x_travel_date_from} and {lead.x_travel_date_to}" if lead.x_travel_date_from and lead.x_travel_date_to else ""
+                dates_info = f" scheduled between {lead.travel_date_from} and {lead.travel_date_to}" if lead.travel_date_from and lead.travel_date_to else ""
                 revenue_info = f" with an expected revenue budget of ${lead.expected_revenue:,.2f}" if lead.expected_revenue else ""
 
-                lead.x_ai_lead_summary = (
-                    f"{lead_name_str} has submitted an inquiry for a {pkg_type.lower()} package to {destination} for {lead.x_total_pax or 1} traveller(s){dates_info}{revenue_info}. "
+                lead.ai_lead_summary = (
+                    f"{lead_name_str} has submitted an inquiry for a {pkg_type.lower()} package to {destination} for {lead.total_pax or 1} traveller(s){dates_info}{revenue_info}. "
                     f"The lead currently carries a call disposition status of '{disposition}', with a total of {note_count} communication interaction(s) logged across phone calls and chatter history. "
                     f"All primary travel preferences and contact details are registered, requiring proactive follow-up to finalize itinerary details and booking quotes."
                 )
-                lead.x_ai_next_step = (
+                lead.ai_next_step = (
                     f"Initiate a direct follow-up with {cust_name if cust_name else 'the client'} via WhatsApp or Phone to review the {destination} itinerary options and confirm booking details."
                 )
-                lead.x_ai_generated_on = fields.Datetime.now()
+                lead.ai_generated_on = fields.Datetime.now()
 
     def action_start_voip_call(self):
         self.ensure_one()
@@ -601,7 +614,7 @@ Respond STRICTLY in valid JSON format with two keys:
         year = date.today().year
 
         for lead in self:
-            if not lead.x_booking_reference:
+            if not lead.booking_reference:
                 stage_name = (lead.stage_id.name or '').lower() if lead.stage_id else ''
                 is_confirmed_stage = bool(
                     'booking' in stage_name or
@@ -613,7 +626,7 @@ Respond STRICTLY in valid JSON format with two keys:
                 )
                 if is_confirmed_stage:
                     ref_code = f"BK-{year}-{lead.id:04d}" if lead.id else f"YTT-{random.randint(100000, 999999)}"
-                    lead.write({'x_booking_reference': ref_code})
+                    lead.write({'booking_reference': ref_code})
                     lead.message_post(
                         body=f"<p style='color: #7141C8; font-weight: bold;'>🎫 Automatic Booking Reference Generated</p>"
                              f"<p>Booking Reference <b>{ref_code}</b> automatically generated upon moving to stage <i>{lead.stage_id.name}</i>.</p>",
@@ -631,8 +644,8 @@ Respond STRICTLY in valid JSON format with two keys:
         return leads
 
     def write(self, vals):
-        if 'x_package_id' in vals and vals['x_package_id'] and 'expected_revenue' not in vals:
-            pkg = self.env['travel.package'].browse(vals['x_package_id'])
+        if 'package_id' in vals and vals['package_id'] and 'expected_revenue' not in vals:
+            pkg = self.env['travel.package'].browse(vals['package_id'])
             if pkg:
                 vals['expected_revenue'] = pkg.price
         res = super().write(vals)

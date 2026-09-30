@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="crm_lead_view_form_travel_ocr" model="ir.ui.view">
+        <field name="name">crm.lead.form.travel.ocr</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="priority">25</field>
+        <field name="arch" type="xml">
+
+            <!-- Add "Passport & Visa Documents (AI OCR)" Tab in Notebook -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Passport &amp; Visa (AI OCR)" name="travel_ocr_tab" invisible="not is_travel_lead">
+                    
+                    <div class="alert alert-info d-flex align-items-center justify-content-between mb-3" role="alert" invisible="not passport_validity_warning">
+                        <div>
+                            <field name="passport_validity_warning" class="fw-bold fs-6"/>
+                        </div>
+                        <div>
+                            <field name="passport_validity_status" widget="badge"
+                                   decoration-success="passport_validity_status == 'valid'"
+                                   decoration-warning="passport_validity_status == 'expiring_soon'"
+                                   decoration-danger="passport_validity_status == 'expired'"/>
+                        </div>
+                    </div>
+
+                    <group>
+                        <group string="Passport Document &amp; AI OCR Scan">
+                            <field name="passport_binary" filename="passport_filename" widget="binary"/>
+                            <field name="passport_filename" invisible="1"/>
+                            <div class="d-flex gap-2 mt-2">
+                                <button name="action_scan_passport_ocr" type="object"
+                                        string="Scan Passport with AI OCR" class="btn-primary mt-2" icon="fa-qrcode"
+                                        invisible="not passport_binary"/>
+                            </div>
+                            <separator string="Extracted Passport Details"/>
+                            <field name="passport_number" placeholder="e.g. Z1234567"/>
+                            <field name="passport_given_names" placeholder="Given Name"/>
+                            <field name="passport_surname" placeholder="Surname"/>
+                            <field name="passport_dob"/>
+                            <field name="passport_gender"/>
+                            <field name="passport_nationality"/>
+                            <field name="passport_issue_date"/>
+                            <field name="passport_expiry_date"/>
+                            <field name="passport_mrz_code" placeholder="P&lt;IND..."/>
+                        </group>
+
+                        <group string="📄 Visa Document &amp; AI OCR Scan">
+                            <field name="visa_binary" filename="visa_filename" widget="binary"/>
+                            <field name="visa_filename" invisible="1"/>
+                            <div class="d-flex gap-2 mt-2">
+                                <button name="action_scan_visa_ocr" type="object"
+                                        string="🔍 Scan Visa with AI OCR" class="btn-primary" icon="fa-file-text-o"
+                                        invisible="not visa_binary"/>
+                            </div>
+                            <separator string="Extracted Visa Details"/>
+                            <field name="visa_status" widget="badge"
+                                   decoration-warning="visa_status in ('pending','submitted')"
+                                   decoration-success="visa_status == 'approved'"
+                                   decoration-danger="visa_status == 'rejected'"/>
+                            <field name="visa_number" placeholder="e.g. V98765432"/>
+                            <field name="visa_type" placeholder="e.g. Tourist 30-Day"/>
+                            <field name="visa_valid_from"/>
+                            <field name="visa_valid_until"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

@@ -37,16 +37,16 @@ class TravelLeadInvoiceWizard(models.TransientModel):
             })
             lead.partner_id = partner.id
 
-        total_amount = lead.expected_revenue or (lead.x_package_id.price if lead.x_package_id else 0.0)
+        total_amount = lead.expected_revenue or (lead.package_id.price if lead.package_id else 0.0)
         if self.advance_payment_method == 'percentage':
             inv_amount = total_amount * (self.amount_percentage / 100.0)
-            line_name = f"Down Payment ({self.amount_percentage}%) for {lead.x_package_id.name if lead.x_package_id else lead.name}"
+            line_name = f"Down Payment ({self.amount_percentage}%) for {lead.package_id.name if lead.package_id else lead.name}"
         elif self.advance_payment_method == 'fixed':
             inv_amount = self.amount
-            line_name = f"Down Payment for {lead.x_package_id.name if lead.x_package_id else lead.name}"
+            line_name = f"Down Payment for {lead.package_id.name if lead.package_id else lead.name}"
         else:
             inv_amount = total_amount
-            line_name = f"{lead.x_package_id.name if lead.x_package_id else 'Travel Booking - ' + lead.name}{' (' + lead.x_destination_id.name + ')' if lead.x_destination_id else ''}"
+            line_name = f"{lead.package_id.name if lead.package_id else 'Travel Booking - ' + lead.name}{' (' + lead.destination_id.name + ')' if lead.destination_id else ''}"
 
         income_account = self.env['account.account'].search([
             ('account_type', '=', 'income')
@@ -55,7 +55,7 @@ class TravelLeadInvoiceWizard(models.TransientModel):
         move_vals = {
             'move_type': 'out_invoice',
             'partner_id': partner.id,
-            'x_lead_id': lead.id,
+            'lead_id': lead.id,
             'invoice_date': fields.Date.today(),
             'invoice_line_ids': [(0, 0, {
                 'name': line_name,

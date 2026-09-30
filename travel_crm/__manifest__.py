@@ -39,7 +39,7 @@ follow-up dashboards, and a rep leaderboard) for a travel-agency vertical:
   full two-way synced messaging.
 """,
     'author': 'Mit Bhavsar',
-    'depends': ['crm', 'account', 'sale_crm', 'mail', 'sms', 'calendar', 'base_automation', 'voip'],
+    'depends': ['crm', 'account', 'sale_crm', 'mail', 'sms', 'calendar', 'base_automation', 'voip', 'website', 'portal'],
     'data': [
         'security/ir.access.csv',
         'data/crm_team_data.xml',
@@ -47,6 +47,7 @@ follow-up dashboards, and a rep leaderboard) for a travel-agency vertical:
         'data/mail_template_data.xml',
         'data/automation_data.xml',
         'data/travel_export_field_data.xml',
+        'data/crm_sla_cron_data.xml',
         'views/crm_lead_views.xml',
         'views/travel_destination_views.xml',
         'views/travel_package_views.xml',
@@ -57,6 +58,10 @@ follow-up dashboards, and a rep leaderboard) for a travel-agency vertical:
         'views/travel_lead_qualification_wizard_views.xml',
         'views/travel_lead_invoice_wizard_views.xml',
         'views/res_config_settings_views.xml',
+        'views/travel_itinerary_views.xml',
+        'views/travel_itinerary_portal_templates.xml',
+        'views/travel_ocr_views.xml',
+        'views/travel_sla_views.xml',
         'views/crm_dashboard_views.xml',
         'views/crm_menu_views.xml',
     ],
@@ -74,7 +79,7 @@ follow-up dashboards, and a rep leaderboard) for a travel-agency vertical:
     },
     'post_init_hook': 'post_init_hook',
     'installable': True,
-
+    'images': ['static/description/banner.png'],
     'application': True,
     'license': 'LGPL-3',
 }

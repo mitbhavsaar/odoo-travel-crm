@@ -7,7 +7,7 @@
         <field name="model">crm.lead</field>
         <field name="arch" type="xml">
             <pivot string="Travel Funnel">
-                <field name="x_call_disposition" type="row"/>
+                <field name="call_disposition" type="row"/>
                 <field name="stage_id" type="col"/>
             </pivot>
         </field>

@@ -13,6 +13,12 @@ class ResConfigSettings(models.TransientModel):
         config_parameter='travel_crm.nvidia_api_key',
         help="NVIDIA Llama API Key used as secondary fallback for AI Lead Summaries."
     )
+    travel_sla_timeout_minutes = fields.Integer(
+        string='SLA Response Timeout (Minutes)',
+        config_parameter='travel_crm.sla_timeout_minutes',
+        default=15,
+        help="Timeout in minutes after which un-contacted leads are auto-reassigned to the next available sales rep."
+    )
 
     def set_values(self):
         # Prevent Odoo 20 cloud_storage module from throwing "Please configure the Cloud Storage before enabling it"

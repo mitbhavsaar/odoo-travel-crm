@@ -132,18 +132,18 @@ Leads enter the system through three main methods:
 ## 📊 Models & Data Fields
 
 ### 1. `crm.lead` (Extended)
-* `x_is_travel_lead` *(Boolean)*: Identifies if lead belongs to the Travel Desk team.
-* `x_destination_id` *(Many2one)*: Link to `travel.destination`.
-* `x_travel_date_from` / `x_travel_date_to` *(Date)*: Trip dates.
-* `x_package_type` *(Selection)*: FIT, Group, Customized, Corporate, Honeymoon, Pilgrimage.
-* `x_pax_adults`, `x_pax_children`, `x_pax_infants`, `x_total_pax` *(Computed)*.
-* `x_visa_required`, `x_visa_status`, `x_kyc_status`, `x_travel_insurance`.
-* `x_call_disposition` *(Selection)*: Fresh, RNR, Interested, Call Back Later, Not Interested, Converted.
-* `x_booking_reference`, `x_itinerary_sent`, `x_itinerary_sent_date`.
-* `x_amount_received`, `x_amount_pending` *(Monetary Computed)*.
-* `x_call_log_ids` *(One2many `travel.call.log`)*.
-* `x_installment_ids` *(One2many `travel.payment.installment`)*.
-* `x_ai_lead_summary`, `x_ai_next_step`, `x_ai_generated_on`.
+* `is_travel_lead` *(Boolean)*: Identifies if lead belongs to the Travel Desk team.
+* `destination_id` *(Many2one)*: Link to `travel.destination`.
+* `travel_date_from` / `travel_date_to` *(Date)*: Trip dates.
+* `package_type` *(Selection)*: FIT, Group, Customized, Corporate, Honeymoon, Pilgrimage.
+* `pax_adults`, `pax_children`, `pax_infants`, `total_pax` *(Computed)*.
+* `visa_required`, `visa_status`, `kyc_status`, `travel_insurance`.
+* `call_disposition` *(Selection)*: Fresh, RNR, Interested, Call Back Later, Not Interested, Converted.
+* `booking_reference`, `itinerary_sent`, `itinerary_sent_date`.
+* `amount_received`, `amount_pending` *(Monetary Computed)*.
+* `call_log_ids` *(One2many `travel.call.log`)*.
+* `installment_ids` *(One2many `travel.payment.installment`)*.
+* `ai_lead_summary`, `ai_next_step`, `ai_generated_on`.
 
 ### 2. `res.config.settings` (Extended)
 * `travel_gemini_api_key` *(Char)*: `travel_crm.gemini_api_key` parameter.

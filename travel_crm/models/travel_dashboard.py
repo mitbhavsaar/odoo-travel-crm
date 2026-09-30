@@ -71,12 +71,12 @@ class TravelDashboard(models.TransientModel):
             inquiry_stage = self.env.ref('travel_crm.stage_travel_inquiry', raise_if_not_found=False)
 
             def is_converted(l):
-                disp = getattr(l, 'x_call_disposition', False)
+                disp = getattr(l, 'call_disposition', False)
                 prob = getattr(l, 'probability', 0)
                 return l.stage_id == won_stage or prob == 100 or disp == 'converted'
 
             def is_open(l):
-                disp = getattr(l, 'x_call_disposition', False)
+                disp = getattr(l, 'call_disposition', False)
                 return l.stage_id == inquiry_stage or disp in ('fresh', 'rnr')
 
             converted_count = len([l for l in active_leads if is_converted(l)])
@@ -157,7 +157,7 @@ class TravelDashboard(models.TransientModel):
                 source_palette = ['#7141C8', '#3B82F6', '#EF4444', '#06B6D4', '#F59E0B', '#9966FF', '#FF9F40']
                 source_counts = {}
                 for lead in active_leads:
-                    src_name = lead.source_id.name if lead.source_id else str(getattr(lead, 'x_call_disposition', 'Fresh') or 'Fresh').title()
+                    src_name = lead.source_id.name if lead.source_id else str(getattr(lead, 'call_disposition', 'Fresh') or 'Fresh').title()
                     source_counts[src_name] = source_counts.get(src_name, 0) + 1
                 total_source_leads = sum(source_counts.values())
                 source_summary_list = []
@@ -213,9 +213,9 @@ class TravelDashboard(models.TransientModel):
 
                 m_domain = [('create_date', '>=', m_start_dt), ('create_date', '<=', m_end_dt)]
                 if travel_team:
-                    m_domain = m_domain + ['|', ('team_id', '=', travel_team.id), ('x_is_travel_lead', '=', True)]
+                    m_domain = m_domain + ['|', ('team_id', '=', travel_team.id), ('is_travel_lead', '=', True)]
                 else:
-                    m_domain = m_domain + [('x_is_travel_lead', '=', True)]
+                    m_domain = m_domain + [('is_travel_lead', '=', True)]
 
                 m_leads = Lead.with_context(active_test=False).search(m_domain)
                 conv_cnt = len([l for l in m_leads if is_converted(l)])
@@ -227,7 +227,7 @@ class TravelDashboard(models.TransientModel):
             # 2. Dynamic Revenue Summary by Destination for Travel Desk
             dest_revenue_map = {}
             for l in active_leads:
-                dest_name = l.x_destination_id.name if l.x_destination_id else 'Unspecified'
+                dest_name = l.destination_id.name if l.destination_id else 'Unspecified'
                 dest_revenue_map[dest_name] = dest_revenue_map.get(dest_name, 0.0) + (l.expected_revenue or 0.0)
 
             if dest_revenue_map:
@@ -254,7 +254,7 @@ class TravelDashboard(models.TransientModel):
             recent_leads_list = []
             leads_for_list = all_leads if all_leads else Lead.with_context(active_test=False).search([], order='create_date desc', limit=20)
             for lead in leads_for_list[:20]:
-                dest_obj = getattr(lead, 'x_destination_id', False)
+                dest_obj = getattr(lead, 'destination_id', False)
                 contact_val = (
                     getattr(lead, 'contact_name', '') or
                     getattr(lead, 'partner_name', '') or
@@ -271,7 +271,7 @@ class TravelDashboard(models.TransientModel):
                     'stage': lead.stage_id.name if lead.stage_id else 'New',
                     'destination': dest_obj.name if dest_obj else 'N/A',
                     'revenue': getattr(lead, 'expected_revenue', 0) or 0,
-                    'disposition': getattr(lead, 'x_call_disposition', 'fresh') or 'fresh',
+                    'disposition': getattr(lead, 'call_disposition', 'fresh') or 'fresh',
                     'date': lead.create_date.strftime('%Y-%m-%d') if lead.create_date else '',
                 })
 
@@ -407,9 +407,9 @@ class TravelDashboard(models.TransientModel):
                         'phone': l.phone or l.mobile or '-',
                         'email': l.email_from or '-',
                         'stage': l.stage_id.name if l.stage_id else 'New',
-                        'destination': getattr(l, 'x_destination_id', False).name if getattr(l, 'x_destination_id', False) else 'N/A',
+                        'destination': getattr(l, 'destination_id', False).name if getattr(l, 'destination_id', False) else 'N/A',
                         'revenue': l.expected_revenue or 0,
-                        'disposition': getattr(l, 'x_call_disposition', 'fresh') or 'fresh',
+                        'disposition': getattr(l, 'call_disposition', 'fresh') or 'fresh',
                         'date': l.create_date.strftime('%Y-%m-%d') if l.create_date else '',
                     })
                 for p in self.env['res.partner'].sudo().search([], order='id desc', limit=20):

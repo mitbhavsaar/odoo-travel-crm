@@ -140,19 +140,19 @@ class TravelCrmApiController(http.Controller):
             'description': payload.get('description') or payload.get('message'),
             'team_id': travel_team.id if travel_team else False,
             'stage_id': inquiry_stage.id if inquiry_stage else False,
-            'x_destination_id': destination_rec.id if destination_rec else False,
-            'x_is_travel_lead': True,
+            'destination_id': destination_rec.id if destination_rec else False,
+            'is_travel_lead': True,
             'type': 'opportunity',
             'source_id': source.id if source else False,
         }
         if payload.get('adults') or payload.get('pax_adults'):
             try:
-                lead_vals['x_pax_adults'] = int(payload.get('adults') or payload.get('pax_adults'))
+                lead_vals['pax_adults'] = int(payload.get('adults') or payload.get('pax_adults'))
             except (ValueError, TypeError):
                 pass
         if payload.get('children') or payload.get('pax_children'):
             try:
-                lead_vals['x_pax_children'] = int(payload.get('children') or payload.get('pax_children'))
+                lead_vals['pax_children'] = int(payload.get('children') or payload.get('pax_children'))
             except (ValueError, TypeError):
                 pass
         if payload.get('price') or payload.get('calculated_price') or payload.get('expected_revenue'):
@@ -162,9 +162,9 @@ class TravelCrmApiController(http.Controller):
             except (ValueError, TypeError):
                 pass
         if payload.get('travel_date_from') or payload.get('departure_date'):
-            lead_vals['x_travel_date_from'] = payload.get('travel_date_from') or payload.get('departure_date')
+            lead_vals['travel_date_from'] = payload.get('travel_date_from') or payload.get('departure_date')
         if payload.get('travel_date_to'):
-            lead_vals['x_travel_date_to'] = payload.get('travel_date_to')
+            lead_vals['travel_date_to'] = payload.get('travel_date_to')
 
         lead_vals.update(loc_vals)
 

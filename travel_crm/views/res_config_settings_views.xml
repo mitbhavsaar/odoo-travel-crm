@@ -16,6 +16,12 @@
                             <field name="travel_nvidia_api_key" placeholder="e.g. nvapi-..."/>
                         </setting>
                     </block>
+                    <block title="Smart SLA Lead Auto-Reassignment" name="travel_crm_sla_setting">
+                        <setting string="SLA Response Timeout" help="Timeout in minutes after which un-contacted leads are auto-reassigned to the next sales rep.">
+                            <field name="travel_sla_timeout_minutes"/>
+                            <span class="text-muted"> Minutes (Default: 15 Mins)</span>
+                        </setting>
+                    </block>
                 </app>
             </xpath>
         </field>

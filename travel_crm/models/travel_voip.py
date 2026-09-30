@@ -35,17 +35,6 @@ class VoipProvider(models.Model):
         pass
 
 
-class ResConfigSettings(models.TransientModel):
-    _inherit = 'res.config.settings'
-
-    cloud_storage_provider = fields.Selection(
-        selection_add=[
-            ('local', 'Local Database Filestore'),
-        ],
-        ondelete={'local': 'set null'},
-    )
-
-
 class ResUsers(models.Model):
     _inherit = 'res.users'
 
@@ -121,12 +110,12 @@ class VoipCall(models.Model):
             if lead:
                 existing = self.env['travel.call.log'].sudo().search([
                     '|',
-                    ('x_voip_call_id', '=', call.id),
+                    ('voip_call_id', '=', call.id),
                     '&', ('lead_id', '=', lead.id), ('call_datetime', '=', call.start_date or call.create_date)
                 ], limit=1)
 
-                if lead and lead.x_call_disposition and lead.x_call_disposition != 'fresh':
-                    disposition = lead.x_call_disposition
+                if lead and lead.call_disposition and lead.call_disposition != 'fresh':
+                    disposition = lead.call_disposition
                 elif call.state in ('aborted', 'missed') or (call.duration or 0) == 0:
                     disposition = 'rnr'
                 else:
@@ -146,7 +135,7 @@ class VoipCall(models.Model):
                     'sim_line': 'app',
                     'call_disposition': disposition,
                     'note': f"Odoo Enterprise VoIP Call ({call.state or 'Completed'})",
-                    'x_voip_call_id': call.id,
+                    'voip_call_id': call.id,
                 }
 
                 if existing:
